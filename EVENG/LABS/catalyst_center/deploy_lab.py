@@ -1,14 +1,17 @@
 # deploy_lab.py
 # reference: https://ttafsir.github.io/evengsdk/api_reference/#evengsdk.api.EvengApi.get_lab
-
 import os
 from evengsdk.client import EvengClient
 
-# Get credentials from environment variables (set in Jenkins)
+# GLOBAL_VARS
+LAB_CREATED = false
+
+# GET_JENKINS_CREDS
 EVE_IP = os.getenv('EVE_SERVER_IP')
 EVE_USER = os.getenv('EVE_USERNAME')
 EVE_PWD = os.getenv('EVE_PASSWORD')
 
+# SET_EVENG_CONNECTION
 client = EvengClient(EVE_IP, protocol="https", ssl_verify=False, log_file="eveng.log")
 client.disable_insecure_warnings()
 client.login(username=EVE_USER, password=EVE_PWD)
@@ -19,34 +22,43 @@ client.set_log_level('DEBUG')
 #################
 
 # LAB_DATA
-lab = {"name": "Jenkins_Auto_Lab_catalyst_center", "description": "Lab created via Jenkins CI/CD", "path": "/"}
+lab = {
+  "name": "Jenkins_Auto_Lab_catalyst_center", 
+  "description": "Lab created via Jenkins CI/CD", 
+  "path": "/"
+}
 
 # LAB_PATH
 lab_path = f"{lab['path']}{lab['name']}.unl"
 
-# CHECK_FOR_LAB
-resp = client.api.get_lab(lab_path)
+# CHECK_FOR_LAB_CREATE_IF_NO_LAB
+try: 
+  { 
+    # CHECK_FOR_LAB
+    resp = client.api.get_lab(lab_path)
 
-# IF_LAB_DELETE_THEN_CREATE
-if resp['status'] == "success":
-  print("lab found.")
-  resp = client.api.close_lab()
-  resp = client.api.stop_all_nodes(lab_path)
-  resp = client.api.delete_lab(lab_path)
-
-  if resp['status'] == "success":
-    print("lab deleted successfully.")
-    resp = client.api.create_lab(**lab)
-    
+    # IF_LAB_CLOSE_STOP_DELETE
     if resp['status'] == "success":
-      print("lab created successfully.")
-    
-# IF_NO_LAB_CREATE
-if resp['status'] != "success":
+      print("lab found.")
+      print("closing lab.")
+      resp = client.api.close_lab()
+      
+      print("stopping all nodes within lab.")
+      resp = client.api.stop_all_nodes(lab_path)
+     
+      print("deleting lab.")
+      resp = client.api.delete_lab(lab_path)
+  }
+except Exception as e:
+  {
+    print("no lab found.")
+    print("creating lab.")
+    print e
+  }
+finally:
+  print("creating lab.")
   resp = client.api.create_lab(**lab)
-  if resp['status'] == "success":
-    print("lab created successfully.")
-
+ 
 # create management network
 mgmt_cloud = {"name": "eve-mgmt", "network_type": "pnet1"}
 client.api.add_lab_network(lab_path, **mgmt_cloud)
