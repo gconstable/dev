@@ -112,7 +112,7 @@ for node_cfg in LAB_CONFIGS:
     with open(node_cfg, 'r') as cfg:
         node_cfg_content = cfg.read()
     
-    client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default')
+    client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default', enable=True)
 
 # START_ALL_NODES
 print("stopping all nodes within lab.")
