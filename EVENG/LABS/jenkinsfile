@@ -1,0 +1,31 @@
+// Jenkinsfile
+pipeline {
+    agent any
+    environment {
+        // These secrets should be stored in Jenkins Credentials Manager
+        EVE_SERVER_IP = '192.168.1.50'
+        EVE_AUTH = credentials('eve-ng-login') 
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pulls the latest config from GitHub
+                checkout scm
+            }
+        }
+        stage('Setup Environment') {
+            steps {
+                sh 'pip install evengsdk'
+            }
+        }
+        stage('Deploy Lab') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'eve-ng-login', 
+                                 passwordVariable: 'EVE_PASSWORD', 
+                                 usernameVariable: 'EVE_USERNAME')]) {
+                    sh 'python3 deploy_lab.py'
+                }
+            }
+        }
+    }
+}
