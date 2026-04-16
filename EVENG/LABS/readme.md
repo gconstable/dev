@@ -49,7 +49,6 @@ Ensure your local Jenkins server can reach your EVE-NG server over the network:
    3. Watch the Jenkins console as it logs into EVE-NG and builds your lab.
 
 ## Jenkins pre-requisites
-# Additional Jenkins config
 ```
 apt-get update -y
 apt-get install python3
