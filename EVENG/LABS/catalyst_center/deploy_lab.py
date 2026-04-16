@@ -61,12 +61,16 @@ finally:
     print("creating lab.")
     resp = client.api.create_lab(**lab)
     LAB_CREATED = True
- 
-# create management network
-mgmt_cloud = {"name": "eve-mgmt", "network_type": "pnet1"}
+
+#################
+# LAB_NODE_DATA #
+#################
+
+# OOB_MANAGEMENT
+mgmt_cloud = {"name": "oob-mgmt", "network_type": "bridge"}
 client.api.add_lab_network(lab_path, **mgmt_cloud)
 
-# create Nodes
+# ADD_NODES
 nodes = [
     {"name": "R1", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 100, "top": 100},
     {"name": "R2", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 300, "top": 300},
@@ -74,22 +78,21 @@ nodes = [
 for node in nodes:
     client.api.add_node(lab_path, **node)
 
-# connect nodes to management network
+# NODE_TO_OOB_MGMT
 mgmt_connections = [
-    {"src": "R1", "src_label": "Gi1/0/1", "dst": "eve-mgmt"},
-    {"src": "R2", "src_label": "Gi1/0/1", "dst": "eve-mgmt"}
+    {"src": "R1", "src_label": "Gi1/0/1", "dst": "oob-mgmt"},
+    {"src": "R2", "src_label": "Gi1/0/1", "dst": "oob-mgmt"}
 ]
 for link in mgmt_connections:
     client.api.connect_node_to_cloud(lab_path, **link)
 
-# create p2p links
+# NODE_TO_NODE_LINKS
 p2p_links = [
     {"src": "R1", "src_label": "Gi1/0/2", "dst": "R2", "dst_label": "Gi1/0/2"},
 ]
 for link in p2p_links:
     client.api.connect_node_to_node(lab_path, **link)
 
-# Close connection to eveng
+# CLOSE_CONNECTION_TO_EVENG
 client.logout()
-
 print("Lab deployment successful.")
