@@ -117,7 +117,7 @@ for node_cfg in LAB_CONFIGS:
         
         client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default', enable=True)
     except Exception as e:
-        print("Supplied config file does not match a node with name: {0} within the lab. continuing...") -f node_name
+        print("Supplied config file does not match a node with name: {name} within the lab. continuing..."),format(name=node_name)
         print(e)
 
 # START_ALL_NODES
