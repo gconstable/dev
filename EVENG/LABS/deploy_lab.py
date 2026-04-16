@@ -7,7 +7,7 @@ EVE_IP = os.getenv('EVE_SERVER_IP')
 EVE_USER = os.getenv('EVE_USERNAME')
 EVE_PWD = os.getenv('EVE_PASSWORD')
 
-client = EvengClient(EVE_IP, protocol="http")
+client = EvengClient(EVE_IP, protocol="https", ssl_verify=False)
 client.disable_insecure_warnings()
 client.login(username=EVE_USER, password=EVE_PWD)
 
