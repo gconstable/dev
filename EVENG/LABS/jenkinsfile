@@ -2,9 +2,14 @@
 pipeline {
     agent any
     environment {
-        // These secrets should be stored in Jenkins Credentials Manager
+        // GLOBAL_VARS
+        LAB_NAME = 'catalyst_center'
+        
+        // EVENG_VARS
         EVE_SERVER_IP = '10.57.1.122'
         EVE_AUTH = credentials('eve-ng-login') 
+        
+        // PYTHON_VARS
         VIRTUAL_ENV = "eveng"
     }
     stages {
@@ -38,7 +43,7 @@ pipeline {
                     
                     sh '''
                         . eveng/bin/activate
-                        python3 EVENG/LABS/deploy_lab.py
+                        python3 EVENG/LABS/${LAB_NAME}/deploy_lab.py
                     '''
                 }
             }
