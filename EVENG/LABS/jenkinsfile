@@ -15,9 +15,8 @@ pipeline {
         }
         stage('Setup Environment') {
             steps {
-                // sh 'python3 -m venv eveng'
-                // sh 'eveng/bin/pip install eve-ng'
-                sh 'pip install eve-ng'
+                sh 'python3 -m venv eveng'
+                sh 'eveng/bin/pip install eve-ng'
             }
         }
         stage('Deploy Lab') {
@@ -27,7 +26,7 @@ pipeline {
                                  usernameVariable: 'EVE_USERNAME')]) {
                     
                     sh '''
-                        //. eveng/bin/activate
+                        . eveng/bin/activate
                         EVENG/LABS/deploy_lab.py
                     '''
                 }
