@@ -12,14 +12,11 @@ client.disable_insecure_warnings()
 client.login(username=EVE_USER, password=EVE_PWD)
 client.set_log_level('DEBUG')
 
-
-
-
-
 # Create lab from the topology file
 # Note: Ensure evengsdk is installed on the Jenkins runner
-os.system(f"eve-ng lab create-from-topology -t topology.yaml")
+# os.system(f"eve-ng lab create-from-topology -t topology.yaml")
 
-# Logout from eveng
-client.logout()
+# Create lab from python file
+import ./topology.py
+
 print("Lab deployment successful.")
