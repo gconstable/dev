@@ -1,6 +1,7 @@
 ## EVE-NG Lab Automation (CI/CD)
 This repository contains the configuration files and automation scripts to deploy network labs programmatically using Jenkins and the EVE-NG REST API.
-## 🚀 Setup Instructions## 1. Configure Jenkins Credentials
+## 🚀 Setup Instructions
+## 1. Configure Jenkins Credentials
 To keep your EVE-NG login secure, do not hardcode passwords.
 
    1. Open Jenkins and go to Manage Jenkins > Credentials.
