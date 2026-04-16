@@ -25,7 +25,7 @@ pipeline {
                                  passwordVariable: 'EVE_PASSWORD', 
                                  usernameVariable: 'EVE_USERNAME')]) {
                     
-                    sh 'source eveng/bin/activate'
+                    sh '. eveng/bin/activate'
                     sh 'python3 EVENG/LABS/labs/deploy_lab.py'
                 }
             }
