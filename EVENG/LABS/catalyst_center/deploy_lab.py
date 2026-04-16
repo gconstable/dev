@@ -4,7 +4,7 @@ import os
 from evengsdk.client import EvengClient
 
 # GLOBAL_VARS
-LAB_CREATED = false
+LAB_CREATED = False
 
 # GET_JENKINS_CREDS
 EVE_IP = os.getenv('EVE_SERVER_IP')
