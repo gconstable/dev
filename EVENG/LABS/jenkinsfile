@@ -16,7 +16,7 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 sh 'python3 -m venv eveng'
-                sh 'eveng/bin/pip install evengsdk'
+                sh 'eveng/bin/pip install eve-ng'
             }
         }
         stage('Deploy Lab') {
