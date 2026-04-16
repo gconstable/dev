@@ -50,7 +50,7 @@ try:
 except Exception as e:
     print("no lab found.")
     print("creating lab.")
-    print e
+    print (e)
 finally:
   print("creating lab.")
   resp = client.api.create_lab(**lab)
