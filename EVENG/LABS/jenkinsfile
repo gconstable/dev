@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Setup Environment') {
             steps {
-                sh 'sudo apt install python3.12-venv'
+                sh 'sudo apt install python3'
                 sh 'python3 -m venv eveng'
                 sh 'eveng/bin/pip install eve-ng'
             }
