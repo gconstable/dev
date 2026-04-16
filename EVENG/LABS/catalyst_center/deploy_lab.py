@@ -68,10 +68,12 @@ finally:
 #################
 
 # OOB_MANAGEMENT
-mgmt_cloud = {"name": "oob_mgmt", "network_type": "bridge"}
+print("Adding management network")
+mgmt_cloud = {"name": "oob_mgmt", "network_type": "Cloud0"}
 client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # ADD_NODES
+print("Adding lab nodes")
 nodes = [
     {"name": "R1", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 100, "top": 100},
     {"name": "R2", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 300, "top": 300},
@@ -80,6 +82,7 @@ for node in nodes:
     client.api.add_node(LAB_PATH, **node)
 
 # NODE_TO_OOB_MGMT
+print("Adding node management connections.")
 mgmt_connections = [
     {"src": "R1", "src_label": "Gi1/0/1", "dst": "oob_mgmt"},
     {"src": "R2", "src_label": "Gi1/0/1", "dst": "oob_mgmt"}
@@ -88,6 +91,7 @@ for link in mgmt_connections:
     client.api.connect_node_to_cloud(LAB_PATH, **link)
 
 # NODE_TO_NODE_LINKS
+print("Adding node to node connections.")
 p2p_links = [
     {"src": "R1", "src_label": "Gi1/0/2", "dst": "R2", "dst_label": "Gi1/0/2"},
 ]
@@ -95,5 +99,6 @@ for link in p2p_links:
     client.api.connect_node_to_node(LAB_PATH, **link)
 
 # CLOSE_CONNECTION_TO_EVENG
+print("Closing connection to eveng.")
 client.logout()
 print("Lab deployment successful.")
