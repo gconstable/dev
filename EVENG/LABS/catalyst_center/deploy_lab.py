@@ -69,7 +69,7 @@ finally:
 
 # OOB_MANAGEMENT
 print("Adding management network")
-mgmt_cloud = {"name": "oob_mgmt", "network_type": "pnet0", "left": 700, "top": 130}
+mgmt_cloud = {"name": "oob_mgmt", "network_type": "bridge", "left": 700, "top": 130}
 client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # ADD_NODES
