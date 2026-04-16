@@ -111,10 +111,13 @@ for node_cfg in LAB_CONFIGS:
     print(node_name)
     try:
         node_details = client.api.get_node_by_name(LAB_PATH, node_name)
+        print(node_details)
+        with open(node_cfg, 'r') as file:
+            node_cfg_content = file.read()
+        
         client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default', enable=True)
-        LAB_NODE_CONFIG_MATCH = True
     except Exception as e:
-        print("Supplied config file does not match a node with name: {node_name} within the lab. continuing...")
+        print("Supplied config file does not match a node with name: {0} within the lab. continuing...") -f node_name
         print(e)
 
 # START_ALL_NODES
