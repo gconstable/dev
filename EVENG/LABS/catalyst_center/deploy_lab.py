@@ -69,14 +69,14 @@ finally:
 
 # OOB_MANAGEMENT
 print("Adding management network")
-mgmt_cloud = {"name": "oob_mgmt", "network_type": "pnet0"}
+mgmt_cloud = {"name": "oob_mgmt", "network_type": "pnet0", "left": 700, "top": 130}
 client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # ADD_NODES
 print("Adding lab nodes")
 nodes = [
-    {"name": "R1", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 100, "top": 100},
-    {"name": "R2", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 300, "top": 300},
+    {"name": "R1", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 300, "top": 300},
+    {"name": "R2", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 600, "top": 300},
 ]
 for node in nodes:
     client.api.add_node(LAB_PATH, **node)
