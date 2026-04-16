@@ -68,7 +68,7 @@ finally:
 #################
 
 # OOB_MANAGEMENT
-mgmt_cloud = {"name": "oob-mgmt", "network_type": "bridge"}
+mgmt_cloud = {"name": "oob_mgmt", "network_type": "bridge"}
 client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # ADD_NODES
@@ -81,8 +81,8 @@ for node in nodes:
 
 # NODE_TO_OOB_MGMT
 mgmt_connections = [
-    {"src": "R1", "src_label": "Gi1/0/1", "dst": "oob-mgmt"},
-    {"src": "R2", "src_label": "Gi1/0/1", "dst": "oob-mgmt"}
+    {"src": "R1", "src_label": "Gi1/0/1", "dst": "oob_mgmt"},
+    {"src": "R2", "src_label": "Gi1/0/1", "dst": "oob_mgmt"}
 ]
 for link in mgmt_connections:
     client.api.connect_node_to_cloud(LAB_PATH, **link)
