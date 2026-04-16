@@ -5,6 +5,7 @@ pipeline {
         // These secrets should be stored in Jenkins Credentials Manager
         EVE_SERVER_IP = '10.57.1.122'
         EVE_AUTH = credentials('eve-ng-login') 
+        VIRTUAL_ENV = "eveng"
     }
     stages {
         stage('Checkout') {
@@ -15,8 +16,17 @@ pipeline {
         }
         stage('Setup Environment') {
             steps {
-                sh 'python3 -m venv eveng'
-                sh 'eveng/bin/pip install eve-ng'
+                sh '''
+                    python3 -m venv ${VIRTUAL_ENV}
+                    . eveng/bin/activate
+                '''
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    eveng/bin/pip install eve-ng
+                '''
             }
         }
         stage('Deploy Lab') {
@@ -27,7 +37,7 @@ pipeline {
                     
                     sh '''
                         . eveng/bin/activate
-                        EVENG/LABS/deploy_lab.py
+                        python -m EVENG/LABS/deploy_lab.py
                     '''
                 }
             }
