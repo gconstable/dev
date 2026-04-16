@@ -1,4 +1,6 @@
 # deploy_lab.py
+# reference: https://ttafsir.github.io/evengsdk/api_reference/#evengsdk.api.EvengApi.get_lab
+
 import os
 from evengsdk.client import EvengClient
 
@@ -12,9 +14,9 @@ client.disable_insecure_warnings()
 client.login(username=EVE_USER, password=EVE_PWD)
 client.set_log_level('DEBUG')
 
-# Create lab from the topology file
-# Note: Ensure evengsdk is installed on the Jenkins runner
-# os.system(f"eve-ng lab create-from-topology -t topology.yaml")
+#################
+# GENERATE_LABS #
+#################
 
 # LAB_DATA
 lab = {"name": "Jenkins_Auto_Lab", "description": "Lab created via Jenkins CI/CD", "path": "/"}
@@ -28,6 +30,7 @@ resp = client.api.get_lab(lab_path)
 # IF_LAB_DELETE_THEN_CREATE
 if resp['status'] == "success":
   print("lab found.")
+  resp = client.api.close_lab(lab_path)
   resp = client.api.delete_lab(lab_path)
 
   if resp['status'] == "success":
