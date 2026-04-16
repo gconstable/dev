@@ -115,7 +115,7 @@ for node_cfg in LAB_CONFIGS:
         with open(node_cfg, 'r') as file:
             node_cfg_content = file.read()
         
-        client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default', enable=True)
+        client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default')
     except Exception as e:
         print("Supplied config file does not match a node with within the lab. ignoring & continuing...")
         print(e)
