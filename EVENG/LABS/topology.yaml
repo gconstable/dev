@@ -6,13 +6,13 @@ lab:
 
 nodes:
   - name: R1
-    template: vios
-    image: vios-adventerprisek9-m.vios_l2-ms.20170321
+    template: cat9kv
+    image: cat9kv-17.15.01
     left: 100
     top: 100
   - name: R2
-    template: vios
-    image: vios-adventerprisek9-m.vios_l2-ms.20170321
+    template: cat9kv
+    image: cat9kv-17.15.01
     left: 300
     top: 100
 
