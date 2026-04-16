@@ -19,7 +19,7 @@ client.set_log_level('DEBUG')
 #################
 
 # LAB_DATA
-lab = {"name": "Jenkins_Auto_Lab", "description": "Lab created via Jenkins CI/CD", "path": "/"}
+lab = {"name": "Jenkins_Auto_Lab_catalyst_center", "description": "Lab created via Jenkins CI/CD", "path": "/"}
 
 # LAB_PATH
 lab_path = f"{lab['path']}{lab['name']}.unl"
