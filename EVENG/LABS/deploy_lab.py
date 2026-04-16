@@ -47,8 +47,6 @@ if resp['status'] != "success":
   if resp['status'] == "success":
     print("lab created successfully.")
 
-
-
 # create management network
 mgmt_cloud = {"name": "eve-mgmt", "network_type": "pnet1"}
 client.api.add_lab_network(lab_path, **mgmt_cloud)
@@ -76,6 +74,7 @@ p2p_links = [
 for link in p2p_links:
     client.api.connect_node_to_node(lab_path, **link)
 
+# Close connection to eveng
 client.logout()
 
 print("Lab deployment successful.")
