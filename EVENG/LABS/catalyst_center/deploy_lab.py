@@ -14,7 +14,7 @@ EVE_PWD = os.getenv('EVE_PASSWORD')
 
 # GET_NODE_CONFIG_FILES
 directory = '/configs'
-for filename in os.listdir(directory):
+for filename in os.listdir('/'):
     if filename.endswith('.cfg'):
         with open(os.path.join(directory, filename)) as f:
             print(f.read())
