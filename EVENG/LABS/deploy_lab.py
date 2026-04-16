@@ -30,7 +30,7 @@ resp = client.api.get_lab(lab_path)
 # IF_LAB_DELETE_THEN_CREATE
 if resp['status'] == "success":
   print("lab found.")
-  resp = client.api.close_lab(lab_path)
+  resp = client.api.close_lab()
   resp = client.api.delete_lab(lab_path)
 
   if resp['status'] == "success":
