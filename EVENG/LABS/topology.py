@@ -14,7 +14,7 @@ client.api.add_lab_network(lab_path, **mgmt_cloud)
 # create Nodes
 nodes = [
     {"name": "R1", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 100, "top": 100},
-    {"name": "R2", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 300, "top: "},
+    {"name": "R2", "template": "cat9kv", "image": "cat9kv-17.15.01", "left": 300, "top": 300},
 ]
 for node in nodes:
     client.api.add_node(lab_path, **node)
