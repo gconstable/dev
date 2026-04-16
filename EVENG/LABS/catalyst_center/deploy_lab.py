@@ -107,17 +107,15 @@ for link in p2p_links:
 
 # LOAD_CONFIGS_TO_NODES
 for node_cfg in LAB_CONFIGS:
-    LAB_NODE_CONFIG_MATCH = False
     node_name = (os.path.splitext(os.path.basename(node_cfg))[0]).upper()
     print(node_name)
     try:
         node_details = client.api.get_node_by_name(LAB_PATH, node_name)
         client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default', enable=True)
         LAB_NODE_CONFIG_MATCH = True
-    except:
-        print("Supplied config file does not match a node within the lab. continuing...")
-        print(node_name)
-        LAB_NODE_CONFIG_MATCH = False
+    except Exception as e:
+        print("Supplied config file does not match a node with name: {node_name} within the lab. continuing...")
+        print(e)
 
 # START_ALL_NODES
 print("stopping all nodes within lab.")
