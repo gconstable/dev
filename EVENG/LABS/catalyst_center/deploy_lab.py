@@ -12,6 +12,13 @@ EVE_IP = os.getenv('EVE_SERVER_IP')
 EVE_USER = os.getenv('EVE_USERNAME')
 EVE_PWD = os.getenv('EVE_PASSWORD')
 
+# GET_NODE_CONFIG_FILES
+directory = './configs'
+for filename in os.listdir(directory):
+    if filename.endswith('.cfg'):
+        with open(os.path.join(directory, filename)) as f:
+            print(f.read())
+
 # SET_EVENG_CONNECTION
 client = EvengClient(EVE_IP, protocol="https", ssl_verify=False, log_file="eveng.log")
 client.disable_insecure_warnings()
@@ -97,6 +104,9 @@ p2p_links = [
 ]
 for link in p2p_links:
     client.api.connect_node_to_node(LAB_PATH, **link)
+
+# LOAD_CONFIGS_TO_NODES
+
 
 # START_ALL_NODES
 print("stopping all nodes within lab.")
