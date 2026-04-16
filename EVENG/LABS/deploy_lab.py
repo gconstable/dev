@@ -31,6 +31,7 @@ resp = client.api.get_lab(lab_path)
 if resp['status'] == "success":
   print("lab found.")
   resp = client.api.close_lab()
+  resp = client.api.stop_all_nodes(lab_path)
   resp = client.api.delete_lab(lab_path)
 
   if resp['status'] == "success":
