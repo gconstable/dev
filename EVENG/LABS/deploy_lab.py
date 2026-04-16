@@ -24,7 +24,7 @@ resp = client.api.get_lab(lab.path)
 
 # IF_LAB_DELETE_THEN_CREATE
 if resp['status'] == "success":
-  resp = client.api.delete_lab(lab.path).
+  resp = client.api.delete_lab(lab.path)
 
   if resp['status'] == "success":
     resp = client.api.create_lab(**lab)
