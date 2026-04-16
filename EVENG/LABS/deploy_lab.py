@@ -19,17 +19,21 @@ client.set_log_level('DEBUG')
 # LAB_DATA
 lab = {"name": "Jenkins_Auto_Lab", "description": "Lab created via Jenkins CI/CD", "path": "/"}
 
+# LAB_PATH
+lab_path = f"{lab['path']}{lab['name']}.unl"
+
 # CHECK_FOR_LAB
-resp = client.api.get_lab(lab['path'] + lab['name'])
+resp = client.api.get_lab(lab_path)
 
 # IF_LAB_DELETE_THEN_CREATE
 if resp['status'] == "success":
   print("lab found.")
-  resp = client.api.delete_lab(lab['path'] + lab['name'])
+  resp = client.api.delete_lab(lab_path)
 
   if resp['status'] == "success":
     print("lab deleted successfully.")
     resp = client.api.create_lab(**lab)
+    
     if resp['status'] == "success":
       print("lab created successfully.")
     
@@ -39,8 +43,7 @@ if resp['status'] != "success":
   if resp['status'] == "success":
     print("lab created successfully.")
 
-# we need the lab path to create objects in the lab
-lab_path = f"{lab['path']}{lab['name']}.unl"
+
 
 # create management network
 mgmt_cloud = {"name": "eve-mgmt", "network_type": "pnet1"}
