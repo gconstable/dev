@@ -16,11 +16,26 @@ client.set_log_level('DEBUG')
 # Note: Ensure evengsdk is installed on the Jenkins runner
 # os.system(f"eve-ng lab create-from-topology -t topology.yaml")
 
-# create a lab
+# LAB_DATA
 lab = {"name": "Jenkins_Auto_Lab", "description": "Lab created via Jenkins CI/CD", "path": "/"}
-resp = client.api.create_lab(**lab)
+
+# CHECK_FOR_LAB
+resp = client.api.get_lab(lab.path)
+
+# IF_LAB_DELETE_THEN_CREATE
 if resp['status'] == "success":
-  print("lab created successfully.")
+  resp = client.api.delete_lab(lab.path).
+
+  if resp['status'] == "success":
+    resp = client.api.create_lab(**lab)
+    if resp['status'] == "success":
+      print("lab created successfully.")
+    
+# IF_NO_LAB_CREATE
+if resp['status'] != "success":
+  resp = client.api.create_lab(**lab)
+  if resp['status'] == "success":
+    print("lab created successfully.")
 
 # we need the lab path to create objects in the lab
 lab_path = f"{lab['path']}{lab['name']}.unl"
