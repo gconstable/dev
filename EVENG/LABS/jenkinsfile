@@ -23,7 +23,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'eve-ng-login', 
                                  passwordVariable: 'EVE_PASSWORD', 
                                  usernameVariable: 'EVE_USERNAME')]) {
-                    sh 'python3 deploy_lab.py'
+                    sh 'python3 /dev/eveng/labs/deploy_lab.py'
                 }
             }
         }
