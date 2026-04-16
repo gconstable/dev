@@ -37,7 +37,7 @@ pipeline {
                     
                     sh '''
                         . eveng/bin/activate
-                        python -m EVENG/LABS/deploy_lab.py
+                        python -m EVENG/LABS/deploy_lab
                     '''
                 }
             }
