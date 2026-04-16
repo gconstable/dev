@@ -63,8 +63,8 @@ for node in nodes:
 
 # connect nodes to management network
 mgmt_connections = [
-    {"src": "R1", "src_label": "GigabitEthernet1/0/1", "dst": "eve-mgmt"},
-    {"src": "R2", "src_label": "GigabitEthernet1/0/1", "dst": "eve-mgmt"}
+    {"src": "R1", "src_label": "Gi1/0/1", "dst": "eve-mgmt"},
+    {"src": "R2", "src_label": "Gi1/0/1", "dst": "eve-mgmt"}
 ]
 for link in mgmt_connections:
     client.api.connect_node_to_cloud(lab_path, **link)
