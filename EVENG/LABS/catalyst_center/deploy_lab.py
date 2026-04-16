@@ -111,16 +111,11 @@ for node_cfg in LAB_CONFIGS:
     node_name = (os.path.splitext(os.path.basename(node_cfg))[0]).upper()
     try:
         node_details = client.api.get_node_by_name(LAB_PATH, node_name)
+        client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default', enable=True)
         LAB_NODE_CONFIG_MATCH = True
     except:
         print("Supplied config file does not match a node within the lab. continuing...")
         LAB_NODE_CONFIG_MATCH = False
-
-    if LAB_NODE_CONFIG_MATCH == True:
-        with open(node_cfg, 'r') as cfg:
-            node_cfg_content = cfg.read()
-
-        client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default', enable=True)
 
 # START_ALL_NODES
 print("stopping all nodes within lab.")
