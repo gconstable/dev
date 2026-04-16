@@ -21,15 +21,15 @@ for node in nodes:
 
 # connect nodes to management network
 mgmt_connections = [
-    {"src": "R1", "src_label": "Mgmt1", "dst": "eve-mgmt"},
-    {"src": "R2", "src_label": "Mgmt1", "dst": "eve-mgmt"}
+    {"src": "R1", "src_label": "Gi0/0", "dst": "eve-mgmt"},
+    {"src": "R2", "src_label": "Gi0/0", "dst": "eve-mgmt"}
 ]
 for link in mgmt_connections:
     client.api.connect_node_to_cloud(lab_path, **link)
 
 # create p2p links
 p2p_links = [
-    {"src": "R1", "src_label": "Eth1", "dst": "R2", "dst_label": "Eth1"},
+    {"src": "R1", "src_label": "Gi1/0/1", "dst": "R2", "dst_label": "Gi1/0/1"},
 ]
 for link in p2p_links:
     client.api.connect_node_to_node(lab_path, **link)
