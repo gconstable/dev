@@ -25,6 +25,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
+                    . eveng/bin/activate
                     eveng/bin/pip install eve-ng
                 '''
             }
