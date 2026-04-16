@@ -5,6 +5,7 @@ from evengsdk.client import EvengClient
 
 # GLOBAL_VARS
 LAB_CREATED = False
+LAB_NAME = "catalyst_center"
 
 # GET_JENKINS_CREDS
 EVE_IP = os.getenv('EVE_SERVER_IP')
@@ -23,18 +24,18 @@ client.set_log_level('DEBUG')
 
 # LAB_DATA
 lab = {
-  "name": "Jenkins_Auto_Lab_catalyst_center", 
+  "name": ("Jenkins_Auto_Lab_" + LAB_NAME), 
   "description": "Lab created via Jenkins CI/CD", 
   "path": "/"
 }
 
 # LAB_PATH
-lab_path = f"{lab['path']}{lab['name']}.unl"
+LAB_PATH = f"{lab['path']}{lab['name']}.unl"
 
 # CHECK_FOR_LAB_CREATE_IF_NO_LAB
 try:
     # CHECK_FOR_LAB
-    resp = client.api.get_lab(lab_path)
+    resp = client.api.get_lab(LAB_PATH)
 
     # IF_LAB_CLOSE_STOP_DELETE
     if resp['status'] == "success":
@@ -43,10 +44,10 @@ try:
       resp = client.api.close_lab()
       
       print("stopping all nodes within lab.")
-      resp = client.api.stop_all_nodes(lab_path)
+      resp = client.api.stop_all_nodes(LAB_PATH)
      
       print("deleting lab.")
-      resp = client.api.delete_lab(lab_path)
+      resp = client.api.delete_lab(LAB_PATH)
       LAB_CREATED = False
 except Exception as e:
     print("no lab found.")
