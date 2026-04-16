@@ -17,6 +17,6 @@ client.set_log_level('DEBUG')
 # os.system(f"eve-ng lab create-from-topology -t topology.yaml")
 
 # Create lab from python file
-import ./topology.py
+import . topology.py
 
 print("Lab deployment successful.")
