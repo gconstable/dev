@@ -47,6 +47,7 @@ try:
      
       print("deleting lab.")
       resp = client.api.delete_lab(lab_path)
+      LAB_CREATED = False
 except Exception as e:
     print("no lab found.")
     print("creating lab.")
@@ -54,6 +55,7 @@ except Exception as e:
 finally:
   print("creating lab.")
   resp = client.api.create_lab(**lab)
+  LAB_CREATED = True
  
 # create management network
 mgmt_cloud = {"name": "eve-mgmt", "network_type": "pnet1"}
