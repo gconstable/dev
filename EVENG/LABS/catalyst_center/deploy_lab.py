@@ -98,6 +98,10 @@ p2p_links = [
 for link in p2p_links:
     client.api.connect_node_to_node(LAB_PATH, **link)
 
+# START_ALL_NODES
+print("stopping all nodes within lab.")
+resp = client.api.start_all_nodes(LAB_PATH)
+
 # CLOSE_CONNECTION_TO_EVENG
 print("Closing connection to eveng.")
 client.logout()
