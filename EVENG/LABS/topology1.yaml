@@ -1,1 +1,24 @@
+# topology.yaml
+lab:
+  name: "Jenkins_Auto_Lab"
+  description: "Lab created via Jenkins CI/CD"
+  path: "/"
 
+nodes:
+  - name: R1
+    template: vios
+    image: vios-adventerprisek9-m.vios_l2-ms.20170321
+    left: 100
+    top: 100
+  - name: R2
+    template: vios
+    image: vios-adventerprisek9-m.vios_l2-ms.20170321
+    left: 300
+    top: 100
+
+links:
+  - source: R1
+    src_intf: 0
+    destination: R2
+    dst_intf: 0
+    
