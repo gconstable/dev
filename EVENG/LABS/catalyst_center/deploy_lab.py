@@ -50,12 +50,17 @@ try:
       LAB_CREATED = False
 except Exception as e:
     print("no lab found.")
-    print("creating lab.")
     print (e)
 finally:
-  print("creating lab.")
-  resp = client.api.create_lab(**lab)
-  LAB_CREATED = True
+  # IF_LAB_CREATED_DISPLAY_MSG
+  if LAB_CREATED == True:
+    print("Lab was already created.  Something unexpected happened")
+
+  # IF_NO_LAB_CREATE_LAB
+  if LAB_CREATED == False:
+    print("creating lab.")
+    resp = client.api.create_lab(**lab)
+    LAB_CREATED = True
  
 # create management network
 mgmt_cloud = {"name": "eve-mgmt", "network_type": "pnet1"}
