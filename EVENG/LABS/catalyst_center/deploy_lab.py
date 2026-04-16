@@ -13,8 +13,9 @@ EVE_USER = os.getenv('EVE_USERNAME')
 EVE_PWD = os.getenv('EVE_PASSWORD')
 
 # GET_NODE_CONFIG_FILES
-directory = '/configs'
+directory = (os.getcwd() + '/configs')
 print(os.getcwd())
+print(os.getcwd() + "/configs")
 for filename in os.listdir('/'):
     if filename.endswith('.cfg'):
         with open(os.path.join(directory, filename)) as f:
@@ -77,7 +78,7 @@ finally:
 
 # OOB_MANAGEMENT
 print("Adding management network")
-mgmt_cloud = {"name": "oob_mgmt", "network_type": "bridge", "left": 700, "top": 130}
+mgmt_cloud = {"name": "oob_mgmt", "network_type": "pnet0", "left": 700, "top": 130}
 client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # ADD_NODES
