@@ -39,7 +39,7 @@ Ensure your local Jenkins server can reach your EVE-NG server over the network:
 
 ## 🛠 Usage
 
-   1. Modify topology.yaml to add or change device connections.
+   1. Modify deploy_lab.py to add or change device connections.
    2. Commit and push changes:
    
    git add .
@@ -47,6 +47,15 @@ Ensure your local Jenkins server can reach your EVE-NG server over the network:
    git push origin main
    
    3. Watch the Jenkins console as it logs into EVE-NG and builds your lab.
+
+## Jenkins pre-requisites
+# Additional Jenkins config
+```
+apt-get update -y
+apt-get install python3
+apt-get install pipx
+
+```
 
 
 
