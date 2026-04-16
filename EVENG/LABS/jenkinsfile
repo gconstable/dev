@@ -26,7 +26,6 @@ pipeline {
                                  usernameVariable: 'EVE_USERNAME')]) {
                     
                     sh '''
-                        ls
                         . eveng/bin/activate
                         EVENG/LABS/deploy_lab.py
                     '''
