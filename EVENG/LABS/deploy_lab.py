@@ -71,7 +71,7 @@ for link in mgmt_connections:
 
 # create p2p links
 p2p_links = [
-    {"src": "R1", "src_label": "Gi1/0/2", "dst": "R2", "dst_label": "GigabitEthernet1/0/2"},
+    {"src": "R1", "src_label": "Gi1/0/2", "dst": "R2", "dst_label": "Gi1/0/2"},
 ]
 for link in p2p_links:
     client.api.connect_node_to_node(lab_path, **link)
