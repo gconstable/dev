@@ -25,7 +25,7 @@ pipeline {
                                  passwordVariable: 'EVE_PASSWORD', 
                                  usernameVariable: 'EVE_USERNAME')]) {
                     sh 'ls'
-                    sh 'python3 /EVENG/LABS/labs/deploy_lab.py'
+                    sh 'python3 EVENG/LABS/labs/deploy_lab.py'
                 }
             }
         }
