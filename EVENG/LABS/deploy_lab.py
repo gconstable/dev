@@ -24,9 +24,11 @@ resp = client.api.get_lab(lab['path'] + lab['name'])
 
 # IF_LAB_DELETE_THEN_CREATE
 if resp['status'] == "success":
+  print("lab found.")
   resp = client.api.delete_lab(lab['path'] + lab['name'])
 
   if resp['status'] == "success":
+    print("lab deleted successfully.")
     resp = client.api.create_lab(**lab)
     if resp['status'] == "success":
       print("lab created successfully.")
