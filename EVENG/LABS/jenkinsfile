@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         // These secrets should be stored in Jenkins Credentials Manager
-        EVE_SERVER_IP = '192.168.1.50'
+        EVE_SERVER_IP = '10.57.1.122'
         EVE_AUTH = credentials('eve-ng-login') 
     }
     stages {
