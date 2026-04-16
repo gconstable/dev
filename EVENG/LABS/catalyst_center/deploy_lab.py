@@ -109,7 +109,7 @@ for link in p2p_links:
 for node_cfg in LAB_CONFIGS:
     print(node_cfg)
     node_name = os.path.splitext(os.path.basename(node_cfg))[0]
-    print(cfg)
+    print(node_name)
     node_details = client.api.get_node_by_name(LAB_PATH, node_name)
     print(node_details)
 
