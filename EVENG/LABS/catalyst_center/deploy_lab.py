@@ -32,8 +32,7 @@ lab = {
 lab_path = f"{lab['path']}{lab['name']}.unl"
 
 # CHECK_FOR_LAB_CREATE_IF_NO_LAB
-try: 
-  { 
+try:
     # CHECK_FOR_LAB
     resp = client.api.get_lab(lab_path)
 
@@ -48,13 +47,10 @@ try:
      
       print("deleting lab.")
       resp = client.api.delete_lab(lab_path)
-  }
 except Exception as e:
-  {
     print("no lab found.")
     print("creating lab.")
     print e
-  }
 finally:
   print("creating lab.")
   resp = client.api.create_lab(**lab)
