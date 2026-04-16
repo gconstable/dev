@@ -1,0 +1,52 @@
+// Jenkinsfile
+pipeline {
+    agent any
+    environment {
+        // GLOBAL_VARS
+        LAB_NAME = 'catalyst_center'
+        
+        // EVENG_VARS
+        EVE_SERVER_IP = '10.57.1.122'
+        EVE_AUTH = credentials('eve-ng-login') 
+        
+        // PYTHON_VARS
+        VIRTUAL_ENV = "eveng"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Pulls the latest config from GitHub
+                checkout scm
+            }
+        }
+        stage('Setup Environment') {
+            steps {
+                sh '''
+                    python3 -m venv ${VIRTUAL_ENV}
+                    . eveng/bin/activate
+                '''
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    . eveng/bin/activate
+                    eveng/bin/pip install eve-ng
+                '''
+            }
+        }
+        stage('Deploy Lab') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'eve-ng-login', 
+                                 passwordVariable: 'EVE_PASSWORD', 
+                                 usernameVariable: 'EVE_USERNAME')]) {
+                    
+                    sh '''
+                        . eveng/bin/activate
+                        python3 EVENG/LABS/${LAB_NAME}/deploy_lab.py
+                    '''
+                }
+            }
+        }
+    }
+}
