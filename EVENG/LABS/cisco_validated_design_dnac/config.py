@@ -52,8 +52,8 @@ nodes = [
       "name": "DIST_A", 
       "template": "viosl2", 
       "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", 
-      "left": 1400, 
-      "top": 300
+      "left": 700, 
+      "top": 600
     },
     {
       "name": "DIST_B", 
@@ -196,37 +196,37 @@ node_to_node = [
       "src": "ACCESS_B", 
       "src_label": "e1", 
       "dst": "DIST_A", 
-      "dst_label": "e4"
+      "dst_label": "e5"
     },
     {
       "src": "ACCESS_B", 
       "src_label": "e2", 
       "dst": "DIST_B", 
-      "dst_label": "e4"
+      "dst_label": "e5"
     },
     {
       "src": "ACCESS_C", 
       "src_label": "e1", 
       "dst": "DIST_A", 
-      "dst_label": "e5"
+      "dst_label": "e6"
     },
     {
       "src": "ACCESS_C", 
       "src_label": "e2", 
       "dst": "DIST_B", 
-      "dst_label": "e5"
+      "dst_label": "e6"
     },
         {
       "src": "ACCESS_D", 
       "src_label": "e1", 
       "dst": "DIST_A", 
-      "dst_label": "e5"
+      "dst_label": "e7"
     },
     {
       "src": "ACCESS_D", 
       "src_label": "e2", 
       "dst": "DIST_B", 
-      "dst_label": "e5"
+      "dst_label": "e7"
     },
   ]
 
