@@ -88,7 +88,7 @@ client.api.add_lab_network(LAB_PATH, **lab_cloud)
 print("Adding lab nodes")
 nodes = [
     {"name": "PE01", "template": "vios", "image": "vios-adventerprisek9-m.spa.159-3.m9", "left": 700, "top": 300},
-    {"name": "CORE_SW01", "template": "vios", "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", "left": 700, "top": 500},
+    {"name": "CORE_SW01", "template": "viosl2", "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", "left": 700, "top": 500},
 ]
 for node in nodes:
     client.api.add_node(LAB_PATH, **node)
