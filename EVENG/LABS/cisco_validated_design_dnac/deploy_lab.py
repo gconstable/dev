@@ -3,7 +3,7 @@
 
 # MODULES / CONFIGS
 import os
-from evengsdk.client import EvengClient
+from evengsdk.client import EvengClient                                                           # IMPORT_EVENG_CLIENT_SDK                                  
 from config import lab                                                                            # IMPORT LAB_CONFIGURATION
 from config import clouds                                                                         # IMPORT_CLOUDS
 from config import nodes                                                                          # IMPORT_NODES
