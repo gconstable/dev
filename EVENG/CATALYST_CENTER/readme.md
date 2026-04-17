@@ -30,7 +30,7 @@ From within the eveng gui for the lab.  Navigate to the dir where the disks have
 ```
 /opt/qemu/bin/qemu-img rebase -b "" sataa.qcow2 -p
 ```
-! Repeat for each disk.
+!!! Repeat for each disk.
 
 8. Copy these rebased disks back over the original disks.
    
