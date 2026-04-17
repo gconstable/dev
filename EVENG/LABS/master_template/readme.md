@@ -1,5 +1,8 @@
 # Readme
 
+## References
+1. https://ttafsir.github.io/evengsdk/api_reference/#evengsdk.api.EvengApi.get_lab
+
 ## eveng lab interface formats
 1. Cisco Cat8k: Gi1/0/{X}
 1. Cisco VIOS Router: Gi0/{X}
