@@ -19,7 +19,7 @@ tar xvf {ova filename}
 
 5. Convert the vmdk files to qcow2 formats.
 ```
-qemu-img convert -cf vmdk -0 qcow2 {vmdk file name} sata{a}.qcow2 -p
+/opt/qemu/bin/qemu-img convert -cf vmdk -O qcow2 {vmdk file name} sata{a}.qcow2 -p
 ```
 !Repeat steps for each vmdk making sure to update the disk id each time i.e. a,b,c
 
