@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         // GLOBAL_VARS
-        LAB_NAME = 'catalyst_center'
+        LAB_NAME = 'central_services'
         
         // EVENG_VARS
         EVE_SERVER_IP = '10.57.1.122'
