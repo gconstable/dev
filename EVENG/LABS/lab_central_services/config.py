@@ -51,7 +51,7 @@ node_to_clouds = [
     },
     {
       "src": "CORE_SW01", 
-      "src_label": "Gi0/1", 
+      "src_label": "E0", 
       "dst": "oob_mgmt"
     },
     {
@@ -66,7 +66,7 @@ node_to_node = [
     {"src": "PE01", 
      "src_label": "Gi0/3", 
      "dst": "CORE_SW01", 
-     "dst_label": "Gi0/3"
+     "dst_label": "E3"
     }
   ]
 
