@@ -105,7 +105,7 @@ for link in mgmt_connections:
 # NODE_TO_PRIVATE_CLOUD
 print("Adding node cloud connections.")
 pcloud_connections = [
-    {"src": "PE01", "src_label": "Gi0/2", "dst": "lab_access"},
+    {"src": "PE01", "src_label": "Gi0/2", "dst": "core_services"},
 ]
 for link in pcloud_connections:
     client.api.connect_node_to_cloud(LAB_PATH, **link)
