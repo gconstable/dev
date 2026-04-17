@@ -53,7 +53,7 @@ nodes = [
       "template": "viosl2", 
       "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", 
       "left": 1400, 
-      "top": 600
+      "top": 300
     },
     {
       "name": "DIST_B", 
@@ -152,13 +152,13 @@ node_to_node = [
     },
     {
       "src": "CORE_A", 
-      "src_label": "e1", 
+      "src_label": "e2", 
       "dst": "DIST_A", 
       "dst_label": "e1"
     },
     {
       "src": "CORE_A", 
-      "src_label": "e1", 
+      "src_label": "e3", 
       "dst": "DIST_B", 
       "dst_label": "e1"
     },
