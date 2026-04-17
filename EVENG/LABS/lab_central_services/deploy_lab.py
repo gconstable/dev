@@ -96,8 +96,8 @@ for node in nodes:
 # NODE_TO_OOB_MGMT
 print("Adding node management connections.")
 mgmt_connections = [
-    {"src": "PE01", "src_label": "Gi1/0/1", "dst": "oob_mgmt"},
-    {"src": "CORE_SW01", "src_label": "Gi1/0/1", "dst": "oob_mgmt"}
+    {"src": "PE01", "src_label": "Gi0/1", "dst": "oob_mgmt"},
+    {"src": "CORE_SW01", "src_label": "Gi0/1", "dst": "oob_mgmt"}
 ]
 for link in mgmt_connections:
     client.api.connect_node_to_cloud(LAB_PATH, **link)
@@ -105,8 +105,8 @@ for link in mgmt_connections:
 # NODE_TO_PRIVATE_CLOUD
 print("Adding node cloud connections.")
 pcloud_connections = [
-    {"src": "PE01", "src_label": "Gi1/0/2", "dst": "lab_access"},
-    {"src": "CORE_SW01", "src_label": "Gi1/0/2", "dst": "lab_access"}
+    {"src": "PE01", "src_label": "Gi0/2", "dst": "lab_access"},
+    {"src": "CORE_SW01", "src_label": "Gi0/2", "dst": "lab_access"}
 ]
 for link in pcloud_connections:
     client.api.connect_node_to_cloud(LAB_PATH, **link)
@@ -115,7 +115,7 @@ for link in pcloud_connections:
 # NODE_TO_NODE_LINKS
 print("Adding node to node connections.")
 p2p_links = [
-    {"src": "PE01", "src_label": "Gi1/0/3", "dst": "CORE_SW01", "dst_label": "Gi1/0/3"},
+    {"src": "PE01", "src_label": "Gi0/3", "dst": "CORE_SW01", "dst_label": "Gi0/3"},
 ]
 for link in p2p_links:
     client.api.connect_node_to_node(LAB_PATH, **link)
