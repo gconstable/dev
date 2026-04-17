@@ -32,6 +32,22 @@ client.set_log_level('DEBUG')
 # IMPORT LAB_CONFIGURATION
 from config import lab
 
+# IMPORT_OOB_MANAGEMENT
+from config import mgmt_cloud
+
+# IMPORT_LAB_CLOUD
+from config import lab_cloud
+
+# IMPORT_NODES
+from config import nodes
+
+# IMPORT_NODE_TO_CLOUD_CONNECTIONS
+from config import node_to_clouds
+
+# IMPORT_NODE_TO_NODE_CONNECTIONS
+from config import node_to_node
+
+
 # LAB_PATH
 LAB_PATH = f"{lab['path']}{lab['name']}.unl"
 
@@ -72,47 +88,24 @@ finally:
 
 # OOB_MANAGEMENT
 print("Adding management network")
-mgmt_cloud = {"name": "oob_mgmt", "network_type": "pnet0", "left": 300, "top": 400}
 client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # LAB_PRIVATE_ACCESS
 print("Adding lab network access")
-lab_cloud = {"name": "core_services", "network_type": "pnet9", "left": 700, "top": 130}
 client.api.add_lab_network(LAB_PATH, **lab_cloud)
 
 # ADD_NODES
 print("Adding lab nodes")
-nodes = [
-    {"name": "PE01", "template": "vios", "image": "vios-adventerprisek9-m.spa.159-3.m9", "left": 700, "top": 300},
-    {"name": "CORE_SW01", "template": "viosl2", "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", "left": 700, "top": 500},
-]
 for node in nodes:
     client.api.add_node(LAB_PATH, **node)
 
-# NODE_TO_OOB_MGMT
-print("Adding node management connections.")
-mgmt_connections = [
-    {"src": "PE01", "src_label": "Gi0/1", "dst": "oob_mgmt"},
-    {"src": "CORE_SW01", "src_label": "Gi0/1", "dst": "oob_mgmt"}
-]
-for link in mgmt_connections:
+# NODE_TO_CLOUD_LINKS
+for link in node_to_clouds:
     client.api.connect_node_to_cloud(LAB_PATH, **link)
-
-# NODE_TO_PRIVATE_CLOUD
-print("Adding node cloud connections.")
-pcloud_connections = [
-    {"src": "PE01", "src_label": "Gi0/2", "dst": "core_services"},
-]
-for link in pcloud_connections:
-    client.api.connect_node_to_cloud(LAB_PATH, **link)
-
 
 # NODE_TO_NODE_LINKS
 print("Adding node to node connections.")
-p2p_links = [
-    {"src": "PE01", "src_label": "Gi0/3", "dst": "CORE_SW01", "dst_label": "Gi0/3"},
-]
-for link in p2p_links:
+for link in node_to_node:
     client.api.connect_node_to_node(LAB_PATH, **link)
 
 # LOAD_CONFIGS_TO_NODES
