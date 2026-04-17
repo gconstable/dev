@@ -136,7 +136,7 @@ for node_cfg in LAB_CONFIGS:
         print(e)
 
 # START_ALL_NODES
-print("stopping all nodes within lab.")
+print("starting all nodes within lab.")
 resp = client.api.start_all_nodes(LAB_PATH)
 
 # CLOSE_CONNECTION_TO_EVENG
