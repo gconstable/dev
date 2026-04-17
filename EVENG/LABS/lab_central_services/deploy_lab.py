@@ -5,8 +5,7 @@
 import os
 from evengsdk.client import EvengClient
 from config import lab                                                                            # IMPORT LAB_CONFIGURATION
-from config import mgmt_cloud                                                                     # IMPORT_OOB_MANAGEMENT
-from config import lab_cloud                                                                      # IMPORT_LAB_CLOUD
+from config import clouds                                                                         # IMPORT_CLOUDS
 from config import nodes                                                                          # IMPORT_NODES
 from config import node_to_clouds                                                                 # IMPORT_NODE_TO_CLOUD_CONNECTIONS
 from config import node_to_node                                                                   # IMPORT_NODE_TO_NODE_CONNECTIONS
@@ -64,26 +63,24 @@ finally:
 # LOAD_LAB_DATA #
 #################
 
-# OOB_MANAGEMENT
-print("Adding management network")
-client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
-
-# LAB_PRIVATE_ACCESS
-print("Adding lab network access")
-client.api.add_lab_network(LAB_PATH, **lab_cloud)
+# ADD_CLOUDS
+for cloud in clouds:
+    print("Adding cloud: " + cloud['name'])
+    client.api.add_lab_network(LAB_PATH, **cloud)
 
 # ADD_NODES
-print("Adding lab nodes")
 for node in nodes:
+    print("Adding node: " + node['name'])
     client.api.add_node(LAB_PATH, **node)
 
-# NODE_TO_CLOUD_LINKS
+# ADD_NODE_TO_CLOUD_LINKS
 for link in node_to_clouds:
+    print("Adding link from node: " + link['src'] + " to cloud: " + link['dst'])
     client.api.connect_node_to_cloud(LAB_PATH, **link)
 
-# NODE_TO_NODE_LINKS
-print("Adding node to node connections.")
+# ADD_NODE_TO_NODE_LINKS
 for link in node_to_node:
+    print("Adding link from node: " + link['src'] + " to node: " + link['dst'])
     client.api.connect_node_to_node(LAB_PATH, **link)
 
 ##############################

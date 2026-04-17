@@ -1,29 +1,37 @@
 ## LAB_CONFIG
 LAB_NAME = "lab_central_services"
 
-# LAB_DATA
+############
+# LAB_DATA #
+############
 lab = {
     "name": ("Jenkins_Auto_Lab_" + LAB_NAME), 
     "description": "Lab created via Jenkins CI/CD", 
     "path": "/"
   }
 
-# OOB_MGMT
-mgmt_cloud = {
+##############
+# CLOUDS     #
+##############
+clouds = [
+  { 
     "name": "oob_mgmt", 
     "network_type": 
     "pnet0", 
     "left": 300, 
     "top": 400
-  }
-
-# LAB_CLOUD
-lab_cloud = {
+  },
+  {
     "name": "core_services", 
     "network_type": "pnet9", 
     "left": 700, 
     "top": 130
   }
+]
+
+############
+# NODES    #
+############
 
 nodes = [
     {
@@ -42,7 +50,10 @@ nodes = [
     },
 ]
 
-# NODE_TO_CLOUD_LINKS
+#################
+# NODE_TO_CLOUD #
+#################
+
 node_to_clouds = [
     {
       "src": "PE01", 
@@ -61,7 +72,10 @@ node_to_clouds = [
     }
   ]
 
-# NODE_TO_NODE_LINKS
+#################
+# NODE_TO_NODE  #
+#################
+
 node_to_node = [
     {"src": "PE01", 
      "src_label": "Gi0/3", 
