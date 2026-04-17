@@ -29,12 +29,8 @@ client.set_log_level('DEBUG')
 # GENERATE_LABS #
 #################
 
-# LAB_DATA
-lab = {
-  "name": ("Jenkins_Auto_Lab_" + LAB_NAME), 
-  "description": "Lab created via Jenkins CI/CD", 
-  "path": "/"
-}
+# IMPORT LAB_CONFIGURATION
+from config import lab
 
 # LAB_PATH
 LAB_PATH = f"{lab['path']}{lab['name']}.unl"
