@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         // GLOBAL_VARS
-        LAB_NAME = 'cisco_dnac_validated_design'
+        LAB_NAME = 'cisco_validated_design_dnac'
         
         // EVENG_VARS
         EVE_SERVER_IP = '10.57.1.122'

@@ -1,5 +1,5 @@
 ## LAB_CONFIG
-LAB_NAME = "cisco_dnac_validated_design"
+LAB_NAME = "cisco_validated_design_dnac"
 
 ############
 # LAB_DATA #
