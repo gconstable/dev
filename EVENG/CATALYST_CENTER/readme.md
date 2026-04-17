@@ -10,7 +10,7 @@
 /opt/unetlab/addons/qemu/dnac-x.x.x.x
 ```
 
-3. Naavigate to directory if you are not already within it.
+3. Navigate to directory if you are not already within it.
 
 4. Extract the ova file.
 ```
