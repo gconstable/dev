@@ -81,7 +81,7 @@ client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # LAB_PRIVATE_ACCESS
 print("Adding lab network access")
-lab_cloud = {"name": "lab_access", "network_type": "pnet9", "left": 800, "top": 130}
+lab_cloud = {"name": "core_services", "network_type": "pnet9", "left": 800, "top": 130}
 client.api.add_lab_network(LAB_PATH, **lab_cloud)
 
 # ADD_NODES
@@ -106,7 +106,6 @@ for link in mgmt_connections:
 print("Adding node cloud connections.")
 pcloud_connections = [
     {"src": "PE01", "src_label": "Gi0/2", "dst": "lab_access"},
-    {"src": "CORE_SW01", "src_label": "Gi0/2", "dst": "lab_access"}
 ]
 for link in pcloud_connections:
     client.api.connect_node_to_cloud(LAB_PATH, **link)
