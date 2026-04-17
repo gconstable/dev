@@ -14,7 +14,7 @@ EVE_PWD = os.getenv('EVE_PASSWORD')
 
 # GET_NODE_CONFIG_FILES
 LAB_CONFIGS = []
-directory = (os.getcwd() + '/EVENG/LABS/catalyst_center/configs')
+directory = (os.getcwd() + ('/EVENG/LABS/{name}/configs').format(name=LAB_NAME))
 for filename in os.listdir(directory):
     if filename.endswith('.cfg'):
         LAB_CONFIGS.append(os.path.join(directory, filename)) 
