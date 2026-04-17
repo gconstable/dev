@@ -76,19 +76,19 @@ finally:
 
 # OOB_MANAGEMENT
 print("Adding management network")
-mgmt_cloud = {"name": "oob_mgmt", "network_type": "pnet0", "left": 600, "top": 130}
+mgmt_cloud = {"name": "oob_mgmt", "network_type": "pnet0", "left": 300, "top": 400}
 client.api.add_lab_network(LAB_PATH, **mgmt_cloud)
 
 # LAB_PRIVATE_ACCESS
 print("Adding lab network access")
-lab_cloud = {"name": "core_services", "network_type": "pnet9", "left": 800, "top": 130}
+lab_cloud = {"name": "core_services", "network_type": "pnet9", "left": 700, "top": 130}
 client.api.add_lab_network(LAB_PATH, **lab_cloud)
 
 # ADD_NODES
 print("Adding lab nodes")
 nodes = [
     {"name": "PE01", "template": "vios", "image": "vios-adventerprisek9-m.spa.159-3.m9", "left": 700, "top": 300},
-    {"name": "CORE_SW01", "template": "vios", "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", "left": 700, "top": 450},
+    {"name": "CORE_SW01", "template": "vios", "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", "left": 700, "top": 500},
 ]
 for node in nodes:
     client.api.add_node(LAB_PATH, **node)
