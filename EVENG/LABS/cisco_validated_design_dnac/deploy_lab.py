@@ -12,7 +12,7 @@ from config import node_to_node                                                 
 
 # GLOBAL_VARS
 LAB_CREATED = False                                                                               # LAB_CREATED_BOOLEAN
-LAB_NAME = "cisco_dnac_validated_design"                                                          # LAB_NAME
+LAB_NAME = "cisco_validated_design_dnac"                                                          # LAB_NAME
 LAB_PATH = f"{lab['path']}{lab['name']}.unl"                                                      # LAB_PATH
 EVE_IP = os.getenv('EVE_SERVER_IP')                                                               # JENKINS - EVE IP
 EVE_USER = os.getenv('EVE_USERNAME')                                                              # JENKINS - EVE USERNAME
