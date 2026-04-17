@@ -18,5 +18,5 @@ qemu_options:
   -vga std
   -usbdevice tablet
   -boot order=cd
-  -cpu host  
+  -cpu host
 ---
