@@ -113,8 +113,8 @@ for node_cfg in LAB_CONFIGS:
 ##############################
 
 # START_ALL_NODES
-print("starting all nodes within lab.")
-resp = client.api.start_all_nodes(LAB_PATH)
+#print("starting all nodes within lab.")
+#resp = client.api.start_all_nodes(LAB_PATH)
 
 ##############################
 # CLOSE_CONNECTION_TO_SERVER #
