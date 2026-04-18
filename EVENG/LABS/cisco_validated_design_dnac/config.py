@@ -66,28 +66,28 @@ nodes = [
       "name": "ACCESS_A", 
       "template": "viosl2", 
       "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", 
-      "left": 350, 
+      "left": 600, 
       "top": 900
     },
     {
       "name": "ACCESS_B", 
       "template": "viosl2", 
       "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", 
-      "left": 700, 
+      "left": 900, 
       "top": 900
     },
     {
       "name": "ACCESS_C", 
       "template": "viosl2", 
       "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", 
-      "left": 1050, 
+      "left": 1200, 
       "top": 900
     },
     {
       "name": "ACCESS_D", 
       "template": "viosl2", 
       "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929", 
-      "left": 1400, 
+      "left": 1500, 
       "top": 900
     },
 ]
