@@ -4,8 +4,8 @@ description: Cisco Catalyst Center
 name: DNAC
 cpulimit: 1
 icon: Misc-2D-DNAC-S.svg
-cpu: 16
-ram: 32000
+cpu: 48
+ram: 257000
 ethernet: 2
 eth_format: "ens{3}"
 console: vnc
