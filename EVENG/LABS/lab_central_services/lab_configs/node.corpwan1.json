@@ -1,0 +1,19 @@
+{
+  "template": "isrv",
+  "delay": 0,
+  "name": "CORP_WAN",
+  "node_type": "qemu",
+  "top": 1037,
+  "left": 172,
+  "console": "telnet",
+  "config": "Unconfigured",
+  "ethernet": null,
+  "serial": null,
+  "image": "isrv-universalk9.17.03.03",
+  "icon": null,
+  "ram": null,
+  "cpu": null,
+  "nvram": null,
+  "idlepc": null,
+  "slot": ""
+}

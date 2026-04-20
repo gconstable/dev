@@ -2,6 +2,5 @@
   "src": "source_node_id",
   "src_label": "source_port_or_interface",
   "dst": "destination_node_id",
-  "dst_label": "destination_port_or_interface",
   "media": "ethernet"
 }

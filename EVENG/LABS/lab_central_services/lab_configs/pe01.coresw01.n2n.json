@@ -1,7 +1,0 @@
-{
-  "src": "PE01",
-  "src_label": "Gi0/3",
-  "dst": "CORE_SW01",
-  "dst_label": "Ge3",
-  "media": "ethernet"
-}

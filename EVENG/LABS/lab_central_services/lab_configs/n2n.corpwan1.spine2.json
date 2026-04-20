@@ -1,0 +1,7 @@
+{
+  "src": "CORP_WAN",
+  "src_label": "Gi2",
+  "dst": "SPINE_02",
+  "dst_label": "e3",
+  "media": "ethernet"
+}

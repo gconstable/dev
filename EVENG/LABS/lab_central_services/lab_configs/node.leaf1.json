@@ -1,0 +1,19 @@
+{
+  "template": "nxosv9k",
+  "delay": 0,
+  "name": "LEAF_01",
+  "node_type": "qemu",
+  "top": 956,
+  "left": 493,
+  "console": "telnet",
+  "config": "Unconfigured",
+  "ethernet": null,
+  "serial": null,
+  "image": "nxosv9k-9300v-10.5.2.F",
+  "icon": null,
+  "ram": null,
+  "cpu": null,
+  "nvram": null,
+  "idlepc": null,
+  "slot": ""
+}

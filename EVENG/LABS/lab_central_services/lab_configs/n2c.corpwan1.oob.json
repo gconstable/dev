@@ -1,0 +1,6 @@
+{
+  "src": "CORP_WAN",
+  "src_label": "Gi3",
+  "dst": "OOB",
+  "media": "ethernet"
+}

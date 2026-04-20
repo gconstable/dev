@@ -1,7 +1,7 @@
 {
-  "src": "CORE_SW01",
+  "src": "LEAF_02",
   "src_label": "e0",
-  "dst": "oob_mgmt",
+  "dst": "OOB",
   "dst_label": "",
   "media": "ethernet"
 }
