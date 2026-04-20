@@ -28,34 +28,27 @@ client.set_log_level('DEBUG')                                                   
 
 # CHECK_FOR_LAB_CREATE_IF_NO_LAB
 try:
-    # CHECK_FOR_LAB
-    resp = client.api.get_lab(LAB_PATH)
+    resp = client.api.get_lab(LAB_PATH)                                                            # CHECK IF LAB EXISTS
 
-    # IF_LAB_CLOSE_STOP_DELETE
-    if resp['status'] == "success":
-      print("lab found.")
-      print("closing lab.")
-      resp = client.api.close_lab()
-      
-      print("stopping all nodes within lab.")
-      resp = client.api.stop_all_nodes(LAB_PATH)
-     
-      print("deleting lab.")
-      resp = client.api.delete_lab(LAB_PATH)
-      LAB_CREATED = False
+    if resp['status'] == "success":                                                                # IF LAB FOUND CLOSE LAB
+      print("lab found.")                                                                          # MSG CUSTOMER
+      LAB_CREATED = True                                                                           # SET LAB CREATED BOOLEAN TO TRUE
+      print("closing lab.")                                                                        # MSG CUSTOMER                                      
+      resp = client.api.close_lab()                                                                # CLOSE LAB                                    
+      print("stopping all nodes within lab.")                                                      # MSG CUSTOMER    
+      resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB
+
 except Exception as e:
     print("no lab found.")
     print (e)
 finally:
-  # IF_LAB_CREATED_DISPLAY_MSG
-  if LAB_CREATED == True:
-    print("Lab was already created.  Something unexpected happened")
+  if LAB_CREATED == True:                                                                          # IF LAB CREATED IS TRUE, MSG CUSTOMER             
+    print("Lab was already created.")                                                              # MSG CUSTOMER
 
-  # IF_NO_LAB_CREATE_LAB
-  if LAB_CREATED == False:
-    print("creating lab.")
-    resp = client.api.create_lab(**lab)
-    LAB_CREATED = True
+  if LAB_CREATED == False:                                                                         # IF LAB CREATED IS FALSE, CREATE LAB
+    print("creating lab.")                                                                         # MSG CUSTOMER
+    resp = client.api.create_lab(**lab)                                                            # CREATE LAB WITH CONFIGURED PROPERTIES
+    LAB_CREATED = True                                                                             # SET LAB CREATED BOOLEAN TO TRUE
 
 #################
 # LOAD_LAB_DATA #
@@ -63,14 +56,15 @@ finally:
 
 # GET_CLOUD_DATA_FROM_DIRECTORY
 try:
-    LAB_CLOUDS = []
-    LAB_NODES = []
-    LAB_LINKS_N2C = []
-    LAB_LINKS_N2N = []
+    LAB_CLOUDS = []                                                                                 # INITIALIZE LIST TO HOLD CLOUD CONFIGS
+    LAB_NODES = []                                                                                  # INITIALIZE LIST TO HOLD NODE CONFIGS
+    LAB_LINKS_N2C = []                                                                              # INITIALIZE LIST TO HOLD NODE TO CLOUD LINK CONFIGS
+    LAB_LINKS_N2N = []                                                                              # INITIALIZE LIST TO HOLD NODE TO NODE LINK CONFIGS
 
-    cfg_dir = (os.getcwd() + ('/EVENG/LABS/{name}/lab_configs').format(name=LAB_NAME))
-    for filename in os.listdir(cfg_dir):
-        if "cloud" in filename and filename.endswith('.json') and "template" not in filename:
+    cfg_dir = (os.getcwd() + ('/EVENG/LABS/{name}/lab_configs').format(name=LAB_NAME))              # DEFINE DIRECTORY TO LOAD LAB CONFIGS FROM
+    
+    for filename in os.listdir(cfg_dir):                                                            # ITERATE THROUGH FILES IN CONFIG DIRECTORY
+        if "cloud" in filename and filename.endswith('.json') and "template" not in filename:                                                           
             LAB_CLOUDS.append(os.path.join(cfg_dir, filename)) 
 
         if "node" in filename and filename.endswith('.json') and "template" not in filename:
