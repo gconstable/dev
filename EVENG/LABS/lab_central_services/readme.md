@@ -13,7 +13,7 @@ The file is named with the following format: <name>.<configType>.json
 4. n2n = node to node link (Contains link data towards another node)
 
 #### EXAMPLES
-<oob>.cloud.json (CLoud Network)
+cloud.<oob>.json (Cloud Network)
 
 ## IPAM
 ### OOB MGMT
