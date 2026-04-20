@@ -2,17 +2,15 @@
 # reference: https://ttafsir.github.io/evengsdk/api_reference/#evengsdk.api.EvengApi.get_lab
 
 # MODULES / CONFIGS
-import os
+import os, json
 from evengsdk.client import EvengClient
 from config import lab                                                                            # IMPORT LAB_CONFIGURATION
-from config import clouds                                                                         # IMPORT_CLOUDS
-from config import nodes                                                                          # IMPORT_NODES
-from config import node_to_clouds                                                                 # IMPORT_NODE_TO_CLOUD_CONNECTIONS
-from config import node_to_node                                                                   # IMPORT_NODE_TO_NODE_CONNECTIONS
+from functions import get_api_command_node                                                        # IMPORT FUNCTION TO CHECK API COMMANDS FOR NODES
+from functions import get_api_command_n2c                                                         # IMPORT FUNCTION TO CHECK API COMMANDS FOR N2C LINKS 
+from functions import get_api_command_n2n                                                         # IMPORT FUNCTION TO CHECK API COMMANDS FOR N2N  LINKS 
 
 # GLOBAL_VARS
 LAB_CREATED = False                                                                               # LAB_CREATED_BOOLEAN
-LAB_NAME = "lab_central_services"                                                                 # LAB_NAME
 LAB_PATH = f"{lab['path']}{lab['name']}.unl"                                                      # LAB_PATH
 EVE_IP = os.getenv('EVE_SERVER_IP')                                                               # JENKINS - EVE IP
 EVE_USER = os.getenv('EVE_USERNAME')                                                              # JENKINS - EVE USERNAME
@@ -63,50 +61,116 @@ finally:
 # LOAD_LAB_DATA #
 #################
 
-# ADD_CLOUDS
-for cloud in clouds:
-    print("Adding cloud: " + cloud['name'])
-    client.api.add_lab_network(LAB_PATH, **cloud)
+# GET_CLOUD_DATA_FROM_DIRECTORY
+try:
+    LAB_CLOUDS = []
+    LAB_NODES = []
+    LAB_LINKS_N2C = []
+    LAB_LINKS_N2N = []
 
-# ADD_NODES
-for node in nodes:
-    print("Adding node: " + node['name'])
-    client.api.add_node(LAB_PATH, **node)
+    cfg_dir = (os.getcwd() + ('/EVENG/LABS/{name}/lab_configs').format(name=LAB_NAME))
+    for filename in os.listdir(cfg_dir):
+        if "cloud" in filename and filename.endswith('.json') and "template" not in filename:
+            LAB_CLOUDS.append(os.path.join(cfg_dir, filename)) 
 
-# ADD_NODE_TO_CLOUD_LINKS
-for link in node_to_clouds:
-    print("Adding link from node: " + link['src'] + " to cloud: " + link['dst'])
-    client.api.connect_node_to_cloud(LAB_PATH, **link)
+        if "node" in filename and filename.endswith('.json') and "template" not in filename:
+            LAB_NODES.append(os.path.join(cfg_dir, filename))
+        
+        if "n2c" in filename and filename.endswith('.json') and "template" not in filename:
+            LAB_LINKS_N2C.append(os.path.join(cfg_dir, filename))
+        
+        if "n2n" in filename and filename.endswith('.json') and "template" not in filename:
+            LAB_LINKS_N2N.append(os.path.join(cfg_dir, filename))
+except Exception as e:
+    print("Error loading lab data from directory. Check that cloud, node, and link data files are properly formatted and located within the correct directory.")
+    print(e)
 
-# ADD_NODE_TO_NODE_LINKS
-for link in node_to_node:
-    print("Adding link from node: " + link['src'] + " to node: " + link['dst'])
-    client.api.connect_node_to_node(LAB_PATH, **link)
+# PROCESS_LOADED_LAB_CONFIGS
+ci = ""
+ci_check = ""
+
+try:
+    ## ADD_CLOUDS
+    for cloud in LAB_CLOUDS:
+        print("Adding cloud: " + cloud['name'])
+        client.api.add_lab_network(LAB_PATH, **cloud)
+
+    ## ADD_NODES
+    for node in LAB_NODES:
+        print("Adding node: " + node['name'])
+
+        json_input = node
+        ci = json.loads(json_input)
+        ci_check = get_api_command_node(ci)
+        
+        if ci_check == "ADD":
+            client.api.add_node(LAB_PATH, **node)
+        
+        ci = ""
+        ci_check = ""
+
+    ## ADD_NODE_TO_CLOUD_LINKS
+    for link in LAB_LINKS_N2C:
+        print("Adding link from node: " + link['src'] + " to cloud: " + link['dst'])
+
+        json_input = node
+        ci = json.loads(json_input)
+        ci_check = get_api_command_n2c(ci)
+        
+        if ci_check == "ADD":
+            client.api.connect_node_to_cloud(LAB_PATH, **link)
+        
+        ci = ""
+        ci_check = ""
+
+    # ADD_NODE_TO_NODE_LINKS
+    for link in LAB_LINKS_N2N:
+        print("Adding link from node: " + link['src'] + " to node: " + link['dst'])
+
+        json_input = node
+        ci = json.loads(json_input)
+        ci_check = get_api_command_n2n(ci)
+        
+        if ci_check == "ADD":
+            client.api.connect_node_to_node(LAB_PATH, **link)
+        
+        ci = ""
+        ci_check = ""
+
+
+except Exception as e:
+    print("Error processing lab data. Check that cloud, node, and link data files are properly formatted and contain valid data.")
+    print(e)
 
 ##############################
 # LOAD DEVICE CONFIGURATIONS #
 ##############################
 
-# GET_NODE_CONFIG_FILES_FROM_DIRECTORY
-LAB_CONFIGS = []
-directory = (os.getcwd() + ('/EVENG/LABS/{name}/configs').format(name=LAB_NAME))
-for filename in os.listdir(directory):
-    if filename.endswith('.cfg'):
-        LAB_CONFIGS.append(os.path.join(directory, filename)) 
+try:
+    # GET_NODE_CONFIG_FILES_FROM_DIRECTORY
+    LAB_CONFIGS = []
+    cfg_directory = (os.getcwd() + ('/EVENG/LABS/{name}/device_configs').format(name=LAB_NAME))
+    for filename in os.listdir(cfg_directory):
+        if filename.endswith('.cfg'):
+            LAB_CONFIGS.append(os.path.join(cfg_directory, filename)) 
 
-# LOAD_DEVICE_CONFIGS_TO_NODES
-for node_cfg in LAB_CONFIGS:
-    node_name = (os.path.splitext(os.path.basename(node_cfg))[0]).upper()
-    try:
-        node_details = client.api.get_node_by_name(LAB_PATH, node_name)
-        with open(node_cfg, 'r') as file:
-            node_cfg_content = file.read()
-        
-        client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default')
-        client.api.enable_node_config(LAB_PATH, node_details['id'])
-    except Exception as e:
-        print("Supplied config file does not match a node with within the lab. ignoring & continuing...")
-        print(e)
+    # LOAD_DEVICE_CONFIGS_TO_NODES
+    for node_cfg in LAB_CONFIGS:
+        node_name = (os.path.splitext(os.path.basename(node_cfg))[0]).upper()
+        try:
+            node_details = client.api.get_node_by_name(LAB_PATH, node_name)
+            
+            with open(node_cfg, 'r') as file:
+                node_cfg_content = file.read()
+            
+            client.api.upload_node_config(LAB_PATH, node_details['id'], node_cfg_content, configset='default')
+            client.api.enable_node_config(LAB_PATH, node_details['id'])
+        except Exception as e:
+            print("Supplied config file does not match a node with within the lab. ignoring & continuing...")
+            print(e)
+except Exception as e:
+    print("Error loading device configurations to nodes. Check that config files are properly formatted and named to match lab nodes.")
+    print(e)
 
 ##############################
 # START_NODES                #

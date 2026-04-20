@@ -1,0 +1,19 @@
+{
+  "template": "cisco_ios_vl2",
+  "delay": 0,
+  "name": "Router-1",
+  "node_type": "qemu",
+  "top": 38,
+  "left": 43,
+  "console": "telnet",
+  "config": "Unconfigured",
+  "ethernet": null,
+  "serial": null,
+  "image": null,
+  "icon": null,
+  "ram": null,
+  "cpu": null,
+  "nvram": null,
+  "idlepc": null,
+  "slot": ""
+}

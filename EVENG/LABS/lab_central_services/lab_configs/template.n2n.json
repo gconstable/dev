@@ -1,0 +1,7 @@
+{
+  "src": "switch_01",
+  "src_label": "GigabitEthernet0/1",
+  "dst": "router_05",
+  "dst_label": "GigabitEthernet0/0",
+  "media": "ethernet"
+}

@@ -1,0 +1,19 @@
+{
+  "template": "viosl2",
+  "delay": 0,
+  "name": "CORE_SW01",
+  "node_type": "qemu",
+  "top": 700,
+  "left": 500,
+  "console": "telnet",
+  "config": "Unconfigured",
+  "ethernet": null,
+  "serial": null,
+  "image": "viosl2-adventerprisek9-m.ssa.high_iron_20200929",
+  "icon": null,
+  "ram": null,
+  "cpu": null,
+  "nvram": null,
+  "idlepc": null,
+  "slot": ""
+}

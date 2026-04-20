@@ -1,0 +1,7 @@
+{
+  "src": "CORE_SW01",
+  "src_label": "e0",
+  "dst": "oob_mgmt",
+  "dst_label": "",
+  "media": "ethernet"
+}

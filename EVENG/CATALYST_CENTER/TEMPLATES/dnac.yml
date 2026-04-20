@@ -4,19 +4,14 @@ description: Cisco Catalyst Center
 name: DNAC
 cpulimit: 1
 icon: Misc-2D-DNAC-S.svg
-cpu:32
-ram: 262144
+cpu: 16
+ram: 32000
 ethernet: 2
-eth_format: ens{3}
+eth_format: "ens{3}"
 console: vnc
-shutdown: 1
 qemu_arch: x86_64
 qemu_version: 5.2.0
 qemu_nic: virtio-net-pci
-qemu_options:
-  -machine type=pc,accel=kvm
-  -vga std
-  -usbdevice tablet
-  -boot order=cd
-  -cpu host
+qemu_options: -machine type=pc-1.0,accel=kvm -smbios type=1,product=KVM -serial mon:stdio -nographic -no-user-config
+  -nodefaults -display none -vga std -rtc base=utc
 ---
