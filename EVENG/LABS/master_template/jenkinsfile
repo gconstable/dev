@@ -6,7 +6,7 @@ pipeline {
         LAB_NAME = 'catalyst_center'
         
         // EVENG_VARS
-        EVE_SERVER_IP = '10.57.1.122'
+        EVE_SERVER_IP = '10.57.1.68'
         EVE_AUTH = credentials('eve-ng-login') 
         
         // PYTHON_VARS
