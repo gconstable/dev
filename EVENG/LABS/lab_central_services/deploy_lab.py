@@ -100,13 +100,18 @@ try:
         resp = client.api.get_lab_network_by_name(LAB_PATH, cloud['name'])
         print(resp)
         if resp['name']:
+            data = resp
             for i in resp:
                 if i in cloud:
                     if i == "type":
-                        resp[i] = cloud["network_type"]
-            
+                        data[i] = cloud["network_type"]
+
+                    if i == "id":
+                        del data[i]
+
             print(resp)
-            client.api.edit_lab_network(resp['id'],**resp)                                                               # IF LAB FOUND CLOSE LAB
+            print(data)
+            client.api.edit_lab_network(data['id'],**resp)                                                               # IF LAB FOUND CLOSE LAB
 
         else:
             client.api.add_lab_network(LAB_PATH, **cloud)
