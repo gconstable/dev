@@ -101,6 +101,7 @@ try:
         print(resp)
         if resp['name']:
             data = resp
+            id = resp['id']
             del data['id']
             
             for i in resp:
@@ -115,8 +116,8 @@ try:
 
             print(data)
             print("Closer")
-            print(resp['id'])
-            client.api.edit_lab_network(LAB_PATH, int(resp['id']), **data)                                                               # IF LAB FOUND CLOSE LAB
+
+            client.api.edit_lab_network(LAB_PATH, id, **data)                                                               # IF LAB FOUND CLOSE LAB
 
         else:
             client.api.add_lab_network(LAB_PATH, **cloud)
