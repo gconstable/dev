@@ -110,7 +110,7 @@ try:
 
             print(data)
             print(type(data))
-            data.pop('id', None)
+            del data['id']
             print(resp['id'])
             print(data)
             client.api.edit_lab_network(LAB_PATH, resp['id'], **data)                                                               # IF LAB FOUND CLOSE LAB
