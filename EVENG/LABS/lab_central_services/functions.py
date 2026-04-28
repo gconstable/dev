@@ -3,7 +3,8 @@ import json
 def get_api_command_node(data):
     # Convert incoming keys to a set for easy comparison
     incoming_keys = set(data.keys())
-
+    print(data)
+    print(incoming_keys)
     # Define your "fingerprints" for each action
     actions = {
         "ADD": 
