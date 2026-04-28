@@ -37,6 +37,9 @@ try:
       resp = client.api.close_lab()                                                                # CLOSE LAB                                    
       print("stopping all nodes within lab.")                                                      # MSG CUSTOMER    
       resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB
+      print ("deleting lab.")                                                                      # MSG CUSTOMER 
+      resp = client.api.delete_lab(LAB_PATH)                                                       # DELETE LAB
+      LAB_CREATED = False                                                                          # SET LAB CREATED BOOLEAN TO FALSE
 
 except Exception as e:
     print("no lab found.")
@@ -96,32 +99,7 @@ try:
     ## ADD_CLOUDS
     for cloud in LAB_CLOUDS:
         print("Adding cloud: " + cloud['name'])
-        
-        resp = client.api.get_lab_network_by_name(LAB_PATH, cloud['name'])
-        print(resp)
-        if resp['name']:
-            data = resp
-            id = resp['id']
-            del data['id']
-            del data['smart']
-            del data['native_vlan']
-            del data['count']
-            del data['left']
-            
-            for i in resp:
-                if i in cloud:
-                    if i == "type":
-                        data[i] = cloud["network_type"]
-                    
-                    if i == "id":
-                        continue
-
-                    data[i] = cloud[i]                   
-
-            client.api.edit_lab_network(LAB_PATH, id, **data)                                                               # IF LAB FOUND CLOSE LAB
-
-        else:
-            client.api.add_lab_network(LAB_PATH, **cloud)
+        client.api.add_lab_network(LAB_PATH, **cloud)
 
     ## ADD_NODES
     for node in LAB_NODES:
