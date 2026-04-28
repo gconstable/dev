@@ -1,5 +1,5 @@
 ## LAB_CONFIG
-LAB_NAME = "central_services"
+LAB_NAME = "lab_central_services"
 
 ############
 # LAB_DATA #
