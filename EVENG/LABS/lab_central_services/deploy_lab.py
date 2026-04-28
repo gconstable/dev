@@ -93,11 +93,16 @@ ci = ""
 ci_check = ""
 
 try:
-    print(LAB_CLOUDS)
     ## ADD_CLOUDS
     for cloud in LAB_CLOUDS:
         print("Adding cloud: " + cloud['name'])
-        client.api.add_lab_network(LAB_PATH, **cloud)
+        
+        resp = client.api.get_lab_network_by_name(LAB_PATH, cloud['name'])                                                            # CHECK IF LAB EXISTS
+        if resp['status'] == "success":
+            client.api.edit_lab_network(resp['id'],**cloud)                                                               # IF LAB FOUND CLOSE LAB
+
+        else:
+            client.api.add_lab_network(LAB_PATH, **cloud)
 
     ## ADD_NODES
     for node in LAB_NODES:
