@@ -111,7 +111,7 @@ try:
 
             print(resp)
             print(data)
-            client.api.edit_lab_network(data['id'],**resp)                                                               # IF LAB FOUND CLOSE LAB
+            client.api.edit_lab_network(resp['id'],**data)                                                               # IF LAB FOUND CLOSE LAB
 
         else:
             client.api.add_lab_network(LAB_PATH, **cloud)
