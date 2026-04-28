@@ -110,6 +110,7 @@ try:
 
             print(data)
             print(type(data))
+            print(data['id'])
             del data['id']
             print(resp['id'])
             print(data)
