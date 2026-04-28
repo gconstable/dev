@@ -66,19 +66,24 @@ try:
     for filename in os.listdir(cfg_dir):                                                            # ITERATE THROUGH FILES IN CONFIG DIRECTORY
         if "cloud" in filename and filename.endswith('.json') and "template" not in filename:
             JSON_FILE_PATH = os.path.join(cfg_dir, filename)
-            print(JSON_FILE_PATH)
-            JSON_DATA = json.load(open(JSON_FILE_PATH))
-            print(JSON_DATA)                                                           
+            JSON_DATA = json.load(open(JSON_FILE_PATH))                           
             LAB_CLOUDS.append(JSON_DATA) 
 
         if "node" in filename and filename.endswith('.json') and "template" not in filename:
-            LAB_NODES.append(os.path.join(cfg_dir, filename))
+            JSON_FILE_PATH = os.path.join(cfg_dir, filename)
+            JSON_DATA = json.load(open(JSON_FILE_PATH))                           
+            LAB_NODES.append(JSON_DATA)
         
         if "n2c" in filename and filename.endswith('.json') and "template" not in filename:
-            LAB_LINKS_N2C.append(os.path.join(cfg_dir, filename))
+            JSON_FILE_PATH = os.path.join(cfg_dir, filename)
+            JSON_DATA = json.load(open(JSON_FILE_PATH))                           
+            LAB_LINKS_N2C.append(JSON_DATA)
         
         if "n2n" in filename and filename.endswith('.json') and "template" not in filename:
-            LAB_LINKS_N2N.append(os.path.join(cfg_dir, filename))
+            JSON_FILE_PATH = os.path.join(cfg_dir, filename)
+            JSON_DATA = json.load(open(JSON_FILE_PATH))                           
+            LAB_LINKS_N2N.append(JSON_DATA)
+
 except Exception as e:
     print("Error loading lab data from directory. Check that cloud, node, and link data files are properly formatted and located within the correct directory.")
     print(e)
