@@ -99,7 +99,7 @@ try:
         
         resp = client.api.get_lab_network_by_name(LAB_PATH, cloud['name'])
         print(resp)
-        if resp['status'] == "success":
+        if resp['name']:
             client.api.edit_lab_network(resp['id'],**cloud)                                                               # IF LAB FOUND CLOSE LAB
 
         else:
