@@ -108,6 +108,7 @@ try:
                     
                     data[i] = cloud[i]                   
 
+            print(data)
             del data["id"]
             print(resp['id'])
             print(data)
