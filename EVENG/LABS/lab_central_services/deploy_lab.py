@@ -65,7 +65,10 @@ try:
     
     for filename in os.listdir(cfg_dir):                                                            # ITERATE THROUGH FILES IN CONFIG DIRECTORY
         if "cloud" in filename and filename.endswith('.json') and "template" not in filename:
-            JSON_DATA = json.load(os.path.join(cfg_dir, filename))                                                           
+            JSON_FILE_PATH = os.path.join(cfg_dir, filename)
+            print(JSON_FILE_PATH)
+            JSON_DATA = json.load(open(JSON_FILE_PATH))
+            print(JSON_DATA)                                                           
             LAB_CLOUDS.append(JSON_DATA) 
 
         if "node" in filename and filename.endswith('.json') and "template" not in filename:
