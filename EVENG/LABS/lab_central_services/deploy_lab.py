@@ -109,7 +109,6 @@ try:
                     data[i] = cloud[i]                   
 
             print(data)
-            data = json.load(data)
             data.pop('id', None)
             print(resp['id'])
             print(data)
