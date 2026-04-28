@@ -106,7 +106,7 @@ try:
         print("Adding node: " + node['name'])
 
         json_input = node
-        ci = json.loads(json_input)
+        #ci = json.loads(json_input)
         ci_check = get_api_command_node(ci)
         
         if ci_check == "ADD":
