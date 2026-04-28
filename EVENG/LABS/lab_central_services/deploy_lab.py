@@ -84,6 +84,7 @@ ci = ""
 ci_check = ""
 
 try:
+    print(LAB_CLOUDS)
     ## ADD_CLOUDS
     for cloud in LAB_CLOUDS:
         print("Adding cloud: " + cloud['name'])
