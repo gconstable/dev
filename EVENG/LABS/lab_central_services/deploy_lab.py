@@ -109,6 +109,7 @@ try:
                     data[i] = cloud[i]                   
 
             print(data)
+            print(type(data))
             data.pop('id', None)
             print(resp['id'])
             print(data)
