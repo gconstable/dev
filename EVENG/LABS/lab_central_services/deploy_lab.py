@@ -64,8 +64,9 @@ try:
     cfg_dir = (os.getcwd() + ('/EVENG/LABS/{name}/lab_configs').format(name=LAB_NAME))              # DEFINE DIRECTORY TO LOAD LAB CONFIGS FROM
     
     for filename in os.listdir(cfg_dir):                                                            # ITERATE THROUGH FILES IN CONFIG DIRECTORY
-        if "cloud" in filename and filename.endswith('.json') and "template" not in filename:                                                           
-            LAB_CLOUDS.append(os.path.join(cfg_dir, filename)) 
+        if "cloud" in filename and filename.endswith('.json') and "template" not in filename:
+            JSON_DATA = json.load(os.path.join(cfg_dir, filename))                                                           
+            LAB_CLOUDS.append(JSON_DATA) 
 
         if "node" in filename and filename.endswith('.json') and "template" not in filename:
             LAB_NODES.append(os.path.join(cfg_dir, filename))
