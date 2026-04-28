@@ -106,6 +106,7 @@ try:
             del data['smart']
             del data['native_vlan']
             del data['count']
+            del data['left']
             
             for i in resp:
                 if i in cloud:
