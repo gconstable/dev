@@ -104,6 +104,7 @@ try:
             id = resp['id']
             del data['id']
             del data['smart']
+            del data['native_vlan']
             
             for i in resp:
                 if i in cloud:
@@ -114,9 +115,6 @@ try:
                         continue
 
                     data[i] = cloud[i]                   
-
-            print(data)
-            print("Closer")
 
             client.api.edit_lab_network(LAB_PATH, id, **data)                                                               # IF LAB FOUND CLOSE LAB
 
