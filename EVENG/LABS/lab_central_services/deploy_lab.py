@@ -4,7 +4,7 @@
 # MODULES / CONFIGS
 import os, json
 from evengsdk.client import EvengClient
-#from config import *                                                                             # IMPORT LAB_CONFIGURATION
+from config import *                                                                             # IMPORT LAB_CONFIGURATION
 from functions import get_api_command_node                                                        # IMPORT FUNCTION TO CHECK API COMMANDS FOR NODES
 from functions import get_api_command_n2c                                                         # IMPORT FUNCTION TO CHECK API COMMANDS FOR N2C LINKS 
 from functions import get_api_command_n2n                                                         # IMPORT FUNCTION TO CHECK API COMMANDS FOR N2N  LINKS 
