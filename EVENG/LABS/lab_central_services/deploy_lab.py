@@ -103,6 +103,7 @@ try:
             data = resp
             id = resp['id']
             del data['id']
+            del data['smart']
             
             for i in resp:
                 if i in cloud:
