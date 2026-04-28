@@ -103,45 +103,15 @@ try:
 
     ## ADD_NODES
     for node in LAB_NODES:
-        print("Adding node: " + node['name'])
-        print("a")
-        ci = json.load(node)
-        print("b")
-        ci_check = get_api_command_node(ci)
-        print("c")
-        if ci_check == "ADD":
-            client.api.add_node(LAB_PATH, **node)
-        
-        ci = ""
-        ci_check = ""
+        client.api.add_node(LAB_PATH, **node)
 
     ## ADD_NODE_TO_CLOUD_LINKS
     for link in LAB_LINKS_N2C:
-        print("Adding link from node: " + link['src'] + " to cloud: " + link['dst'])
-
-        json_input = node
-        ci = json.loads(json_input)
-        ci_check = get_api_command_n2c(ci)
-        
-        if ci_check == "ADD":
-            client.api.connect_node_to_cloud(LAB_PATH, **link)
-        
-        ci = ""
-        ci_check = ""
+        client.api.connect_node_to_cloud(LAB_PATH, **link)
 
     # ADD_NODE_TO_NODE_LINKS
     for link in LAB_LINKS_N2N:
-        print("Adding link from node: " + link['src'] + " to node: " + link['dst'])
-
-        json_input = node
-        ci = json.loads(json_input)
-        ci_check = get_api_command_n2n(ci)
-        
-        if ci_check == "ADD":
-            client.api.connect_node_to_node(LAB_PATH, **link)
-        
-        ci = ""
-        ci_check = ""
+        client.api.connect_node_to_node(LAB_PATH, **link)
 
 
 except Exception as e:
