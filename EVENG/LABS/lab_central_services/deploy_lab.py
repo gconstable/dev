@@ -110,11 +110,13 @@ try:
                     
                     if i == "id":
                         continue
-                    
+
                     data[i] = cloud[i]                   
 
             print(data)
-            client.api.edit_lab_network(LAB_PATH, resp['id'], **data)                                                               # IF LAB FOUND CLOSE LAB
+            print("Closer")
+            print(resp['id'])
+            client.api.edit_lab_network(LAB_PATH, int(resp['id']), **data)                                                               # IF LAB FOUND CLOSE LAB
 
         else:
             client.api.add_lab_network(LAB_PATH, **cloud)
