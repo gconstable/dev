@@ -104,10 +104,11 @@ try:
     ## ADD_NODES
     for node in LAB_NODES:
         print("Adding node: " + node['name'])
-
+        print("a")
         ci = json.loads(node)
+        print("b")
         ci_check = get_api_command_node(ci)
-        
+        print("c")
         if ci_check == "ADD":
             client.api.add_node(LAB_PATH, **node)
         
