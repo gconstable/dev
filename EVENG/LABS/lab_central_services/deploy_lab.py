@@ -101,6 +101,7 @@ try:
         print(resp)
         if resp['name']:
             data = resp
+            del data['id']
             for i in resp:
                 if i in cloud:
                     if i == "type":
@@ -111,7 +112,6 @@ try:
             print(data)
             print(type(data))
             print(data['id'])
-            data.pop('id', None)
             print(resp['id'])
             print(data)
             client.api.edit_lab_network(LAB_PATH, resp['id'], **data)                                                               # IF LAB FOUND CLOSE LAB
