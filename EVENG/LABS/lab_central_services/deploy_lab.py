@@ -102,17 +102,17 @@ try:
         if resp['name']:
             data = resp
             del data['id']
+            
             for i in resp:
                 if i in cloud:
                     if i == "type":
                         data[i] = cloud["network_type"]
                     
+                    if i == "id":
+                        continue
+                    
                     data[i] = cloud[i]                   
 
-            print(data)
-            print(type(data))
-            print(data['id'])
-            print(resp['id'])
             print(data)
             client.api.edit_lab_network(LAB_PATH, resp['id'], **data)                                                               # IF LAB FOUND CLOSE LAB
 
