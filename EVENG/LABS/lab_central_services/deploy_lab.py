@@ -105,7 +105,7 @@ try:
     for node in LAB_NODES:
         print("Adding node: " + node['name'])
         print("a")
-        ci = json.loads(node)
+        ci = json.load(node)
         print("b")
         ci_check = get_api_command_node(ci)
         print("c")
