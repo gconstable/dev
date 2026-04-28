@@ -108,7 +108,7 @@ try:
                     
                     data[i] = cloud[i]                   
 
-            del data[i]
+            del data["id"]
             print(data)
             client.api.edit_lab_network(resp['id'],**data)                                                               # IF LAB FOUND CLOSE LAB
 
