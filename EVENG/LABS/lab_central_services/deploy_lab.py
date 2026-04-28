@@ -109,7 +109,7 @@ try:
                     data[i] = cloud[i]                   
 
             print(data)
-            del data["id"]
+            del data['id']
             print(resp['id'])
             print(data)
             client.api.edit_lab_network(LAB_PATH, resp['id'], **data)                                                               # IF LAB FOUND CLOSE LAB
