@@ -106,8 +106,8 @@ try:
                     if i == "type":
                         data[i] = cloud["network_type"]
 
-                    if i == "id":
-                        del data[i]
+                if i == "id":
+                    del data[i]
 
             print(resp)
             print(data)
