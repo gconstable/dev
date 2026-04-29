@@ -38,7 +38,7 @@ try:
       print("stopping all nodes within lab.")                                                      # MSG CUSTOMER    
       resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB                                                                      # SET LAB CREATED BOOLEAN TO FALSE
       print("Deleting lab...")
-      resp = client.api.delete_lab(LAB_PATH)                                                       # DELETE LAB
+      resp = client.api.delete_lab(LAB_PATH)                                                        # DELETE LAB
       LAB_CREATED == False
 except Exception as e:
     print("no lab found.")
@@ -120,6 +120,7 @@ try:
 except Exception as e:
     print("Error processing lab data. Check that cloud, node, and link data files are properly formatted and contain valid data.")
     print(e)
+    exit(1)
 
 ##############################
 # LOAD DEVICE CONFIGURATIONS #
