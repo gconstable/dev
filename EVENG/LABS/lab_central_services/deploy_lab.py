@@ -107,12 +107,12 @@ try:
 
     ## ADD_NODE_TO_CLOUD_LINKS
     for link in LAB_LINKS_N2C:
-        print("Adding node to cloud link: " + link['node_name'] + " to " + link['cloud_name'])
+        print("Adding node to cloud link: " + link['src'] + " to " + link['dst'])
         client.api.connect_node_to_cloud(LAB_PATH, **link)
 
     # ADD_NODE_TO_NODE_LINKS
     for link in LAB_LINKS_N2N:
-        print("Adding node to node link: " + link['node_name'] + " to " + link['node_name'])
+        print("Adding node to node link: " + link['src'] + " to " + link['dst'])
         client.api.connect_node_to_node(LAB_PATH, **link)
 
 
