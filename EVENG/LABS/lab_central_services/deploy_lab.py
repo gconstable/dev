@@ -2,7 +2,7 @@
 # reference: https://ttafsir.github.io/evengsdk/api_reference/#evengsdk.api.EvengApi.get_lab
 
 # MODULES / CONFIGS
-import os, json
+import os, json, time
 from evengsdk.client import EvengClient
 from config import *                                                                             # IMPORT LAB_CONFIGURATION
 from functions import get_api_command_node                                                        # IMPORT FUNCTION TO CHECK API COMMANDS FOR NODES
@@ -39,7 +39,7 @@ try:
       resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB                                                                      # SET LAB CREATED BOOLEAN TO FALSE
       print("Deleting lab...")
       resp = client.api.delete_lab(LAB_PATH)                                                        # DELETE LAB
-      sleep(5)                                                                                   # SLEEP TO ALLOW FOR LAB TO FULLY DELETE BEFORE RECREATING
+      time.sleep(5)                                                                                   # SLEEP TO ALLOW FOR LAB TO FULLY DELETE BEFORE RECREATING
       LAB_CREATED == False
 except Exception as e:
     print("no lab found.")
