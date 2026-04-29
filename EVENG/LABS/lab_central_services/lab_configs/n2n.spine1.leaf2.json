@@ -1,7 +1,7 @@
 {
   "src": "SPINE_01",
-  "src_label": "e1",
+  "src_label": "e2",
   "dst": "LEAF_02",
-  "dst_label": "e1",
+  "dst_label": "e2",
   "media": "ethernet"
 }
