@@ -36,11 +36,9 @@ try:
       print("closing lab.")                                                                        # MSG CUSTOMER                                      
       resp = client.api.close_lab()                                                                # CLOSE LAB                                    
       print("stopping all nodes within lab.")                                                      # MSG CUSTOMER    
-      resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB
-      print ("deleting lab.")                                                                      # MSG CUSTOMER 
+      resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB                                                                      # SET LAB CREATED BOOLEAN TO FALSE
+      print("Deleting lab...")
       resp = client.api.delete_lab(LAB_PATH)                                                       # DELETE LAB
-      LAB_CREATED = False                                                                          # SET LAB CREATED BOOLEAN TO FALSE
-
 except Exception as e:
     print("no lab found.")
     print (e)
@@ -103,14 +101,17 @@ try:
 
     ## ADD_NODES
     for node in LAB_NODES:
+        print("Adding node: " + node['name'])
         client.api.add_node(LAB_PATH, **node)
 
     ## ADD_NODE_TO_CLOUD_LINKS
     for link in LAB_LINKS_N2C:
+        print("Adding node to cloud link: " + link['node_name'] + " to " + link['cloud_name'])
         client.api.connect_node_to_cloud(LAB_PATH, **link)
 
     # ADD_NODE_TO_NODE_LINKS
     for link in LAB_LINKS_N2N:
+        print("Adding node to node link: " + link['node_name'] + " to " + link['node_name'])
         client.api.connect_node_to_node(LAB_PATH, **link)
 
 
