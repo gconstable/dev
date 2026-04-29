@@ -98,7 +98,6 @@ try:
     ## ADD_CLOUDS
     for cloud in LAB_CLOUDS:
         print("Adding cloud: " + cloud['name'])
-        print(LAB_PATH)
         client.api.add_lab_network(LAB_PATH, **cloud)
 
     ## ADD_NODES
