@@ -52,6 +52,7 @@ finally:
     print("creating lab.")                                                                         # MSG CUSTOMER
     resp = client.api.create_lab(**lab)                                                            # CREATE LAB WITH CONFIGURED PROPERTIES
     LAB_CREATED = True                                                                             # SET LAB CREATED BOOLEAN TO TRUE
+    time.sleep(5)
 
 #################
 # LOAD_LAB_DATA #
