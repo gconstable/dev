@@ -1,7 +1,7 @@
 {
   "src": "LEAF_02",
   "src_label": "e0",
-  "dst": "OOB",
+  "dst": "OOB-2",
   "dst_label": "",
   "media": "ethernet"
 }
