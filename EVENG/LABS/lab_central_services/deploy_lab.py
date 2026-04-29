@@ -39,6 +39,7 @@ try:
       resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB                                                                      # SET LAB CREATED BOOLEAN TO FALSE
       print("Deleting lab...")
       resp = client.api.delete_lab(LAB_PATH)                                                       # DELETE LAB
+      LAB_CREATED == False
 except Exception as e:
     print("no lab found.")
     print (e)
@@ -97,6 +98,7 @@ try:
     ## ADD_CLOUDS
     for cloud in LAB_CLOUDS:
         print("Adding cloud: " + cloud['name'])
+        print(LAB_PATH)
         client.api.add_lab_network(LAB_PATH, **cloud)
 
     ## ADD_NODES
