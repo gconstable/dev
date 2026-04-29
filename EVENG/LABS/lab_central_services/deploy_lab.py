@@ -38,9 +38,8 @@ try:
       print("stopping all nodes within lab.")                                                      # MSG CUSTOMER    
       resp = client.api.stop_all_nodes(LAB_PATH)                                                   # STOP ALL NODES WITHIN LAB                                                                      # SET LAB CREATED BOOLEAN TO FALSE
       print("Deleting lab...")
-      resp = client.api.delete_lab(LAB_PATH)                                                        # DELETE LAB
-      time.sleep(10)                                                                                   # SLEEP TO ALLOW FOR LAB TO FULLY DELETE BEFORE RECREATING
-      LAB_CREATED == False
+      resp = client.api.delete_lab(LAB_PATH)                                                       # DELETE LAB
+      LAB_CREATED = False
 except Exception as e:
     print("no lab found.")
     print (e)
