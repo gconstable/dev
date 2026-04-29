@@ -90,6 +90,7 @@ try:
 except Exception as e:
     print("Error loading lab data from directory. Check that cloud, node, and link data files are properly formatted and located within the correct directory.")
     print(e)
+    exit(1)
 
 # PROCESS_LOADED_LAB_CONFIGS
 ci = ""
@@ -151,14 +152,7 @@ try:
 except Exception as e:
     print("Error loading device configurations to nodes. Check that config files are properly formatted and named to match lab nodes.")
     print(e)
-
-##############################
-# START_NODES                #
-##############################
-
-# START_ALL_NODES
-print("starting all nodes within lab.")
-resp = client.api.start_all_nodes(LAB_PATH)
+    exit(1)
 
 ##############################
 # CLOSE_CONNECTION_TO_SERVER #
