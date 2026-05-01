@@ -3,5 +3,6 @@
   "visibility": 1,
   "name": "OOB-2",
   "left": 1311,
-  "top": 404
+  "top": 404,
+  "icon": "cloud"
 }
