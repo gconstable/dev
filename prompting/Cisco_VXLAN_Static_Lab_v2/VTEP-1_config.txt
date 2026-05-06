@@ -1,0 +1,33 @@
+! VTEP-1 Base Config
+hostname VTEP-1
+!
+ip routing
+!
+interface GigabitEthernet2
+   no switchport
+   ip address 10.0.0.1 255.255.255.252
+   ip mtu 1550
+   no shutdown
+!
+interface Loopback0
+   ip address 1.1.1.1 255.255.255.255
+!
+ip route 2.2.2.2 255.255.255.255 10.0.0.2
+!
+interface nve1
+   no ip address
+   source-interface Loopback0
+   member vni 10010
+      ingress-replication 2.2.2.2
+   no shutdown
+!
+bridge-domain 10
+   member vni 10010
+!
+interface GigabitEthernet1
+   no ip address
+   no shutdown
+   service instance 10 ethernet
+      encapsulation untagged
+      bridge-domain 10
+end

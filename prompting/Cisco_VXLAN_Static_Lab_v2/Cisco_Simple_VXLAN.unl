@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<lab name="Cisco_Simple_VXLAN" id="c9a7d32c-b5f4-4f01-8b01-28dcf551717f" version="1" scripttimeout="300" lock="0">
+  <topology>
+    <nodes>
+      <node id="1" name="VTEP-1" type="qemu" template="csr1000v" ram="3072" left="300" top="200" icon="Router.png" ethernet="4"/>
+      <node id="2" name="VTEP-2" type="qemu" template="csr1000v" ram="3072" left="600" top="200" icon="Router.png" ethernet="4"/>
+      <node id="3" name="Client-1" type="vpcs" template="vpcs" ram="128" left="300" top="400" icon="Desktop.png" ethernet="4"/>
+      <node id="4" name="Client-2" type="vpcs" template="vpcs" ram="128" left="600" top="400" icon="Desktop.png" ethernet="4"/>
+    </nodes>
+    <networks>
+      <network id="1" type="bridge" name="Net_Underlay"/>
+      <network id="2" type="bridge" name="Net_Client_1"/>
+      <network id="3" type="bridge" name="Net_Client_2"/>
+    </networks>
+  </topology>
+</lab>
