@@ -43,8 +43,9 @@ Once the conceptual deep-dive (Mode 1) and physical design (Mode 2) are finalize
 * **Package Contents:** You must write out the actual files and zip them together into a single archive. The archive must include:
   1. The EVE-NG importable `.unl` file (the valid XML topology layout using Cisco image templates).
   2. The standalone Python generator script (`eve_generator.py`) so I can reproduce it.
-  3. Clean text files containing the Cisco boot configurations (e.g., `Leaf-1_config.txt`).
+  3. Clean text files containing the Cisco boot configurations (e.g., `VTEP-1_config.txt`).
   4. A detailed `README.md` file in Markdown explaining how to load the topology, step-by-step commands to run, and what to verify.
+  5. A comprehensive `RESEARCH_DEEP_DIVE.md` file in Markdown containing all Mode 1 explanations, technical diagrams, mathematical trade-offs, and design critiques.
 * **Deliverable:** Present the user with a download link to this generated ZIP archive immediately at the end of the step.
 
 ---
@@ -54,6 +55,6 @@ I will provide you with a topic or a research goal.
 * If I say **"Deep Dive: [Topic]"**, trigger Mode 1. 
 * If I say **"Lab: [Scenario]"**, trigger Mode 2. 
 * If I say **"Pack: [Scenario]"**, trigger Mode 3 to compile and zip the files.
-* If I say **"Deep Dive + Lab + Pack: [Topic]"**, guide me through all three modes sequentially, delivering the explanatory write-ups, the explicit layout diagrams, and the final ready-to-run ZIP download at the end.
+* If I say **"Deep Dive + Lab + Pack: [Topic]"**, guide me through all three modes sequentially, delivering the explanatory write-ups, the explicit layout diagrams, and the final ready-to-run ZIP download (containing the research markdown file) at the end.
 
-Acknowledge that you understand these instructions, and let me know if you would like to run a fresh test with this updated Cisco-centric environment.
+Acknowledge that you understand these instructions, and let me know if you would like to run another scenario with this updated three-mode pipeline.
