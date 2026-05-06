@@ -1,0 +1,47 @@
+! Spine-1 Route Reflector Base Configuration (Cisco IOS-XE)
+hostname Spine-1
+!
+ip routing
+!
+interface Loopback0
+ ip address 9.9.9.9 255.255.255.255
+ ip ospf 1 area 0
+!
+interface Loopback1
+ ip address 99.99.99.99 255.255.255.255
+ ip ospf 1 area 0
+!
+! Connection to Leaf-1
+interface GigabitEthernet2
+ no switchport
+ ip address 10.0.1.1 255.255.255.252
+ ip ospf 1 area 0
+ ip mtu 1550
+ no shutdown
+!
+! Connection to Leaf-2
+interface GigabitEthernet3
+ no switchport
+ ip address 10.0.2.1 255.255.255.252
+ ip ospf 1 area 0
+ ip mtu 1550
+ no shutdown
+!
+router ospf 1
+ router-id 9.9.9.9
+!
+router bgp 65001
+ bgp router-id 99.99.99.99
+ neighbor 11.11.11.11 remote-as 65001
+ neighbor 11.11.11.11 update-source Loopback1
+ neighbor 22.22.22.22 remote-as 65001
+ neighbor 22.22.22.22 update-source Loopback1
+ !
+ address-family l2vpn evpn
+  neighbor 11.11.11.11 activate
+  neighbor 11.11.11.11 route-reflector-client
+  neighbor 11.11.11.11 send-community both
+  neighbor 22.22.22.22 activate
+  neighbor 22.22.22.22 route-reflector-client
+  neighbor 22.22.22.22 send-community both
+end

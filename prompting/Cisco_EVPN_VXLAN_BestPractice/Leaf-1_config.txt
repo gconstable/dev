@@ -1,0 +1,90 @@
+! Leaf-1 EVPN VXLAN Baseline Configuration (Cisco IOS-XE)
+hostname Leaf-1
+!
+ip routing
+ip unicast-routing
+!
+! VRF Definition for Multi-tenancy
+vrf definition Tenant-A
+ rd 1:1
+ address-family ipv4
+  route-target export 1:1
+  route-target import 1:1
+  route-target export 1:1 stitching
+  route-target import 1:1 stitching
+ !
+! L3VNI Transport Interface (VLAN 99)
+vlan 99
+ name L3VNI-Transit
+!
+interface Vlan99
+ vrf forwarding Tenant-A
+ ip unnumbered Loopback0
+ no autostate
+!
+! L2VNI Tenant Subnet Interface (VLAN 10)
+vlan 10
+ name Tenant-Subnet-10
+!
+interface Vlan10
+ vrf forwarding Tenant-A
+ ip address 192.168.10.1 255.255.255.0
+ arp suppression enable
+!
+! Loopback for VTEP Source
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ip ospf 1 area 0
+!
+! Loopback for BGP peering
+interface Loopback1
+ ip address 11.11.11.11 255.255.255.255
+ ip ospf 1 area 0
+!
+! Interface towards Spine-1
+interface GigabitEthernet2
+ no switchport
+ ip address 10.0.1.2 255.255.255.252
+ ip ospf 1 area 0
+ ip mtu 1550
+ no shutdown
+!
+! Interface towards Client-1
+interface GigabitEthernet1
+ no ip address
+ no shutdown
+ service instance 10 ethernet
+  encapsulation untagged
+  bridge-domain 10
+!
+bridge-domain 10
+ member vni 10010
+!
+! VXLAN NVE Interface
+interface nve1
+ no ip address
+ source-interface Loopback0
+ host-reachability protocol bgp
+ member vni 10010
+  suppress-arp
+ member vni 50099
+  vrf Tenant-A
+!
+! OSPF Underlay Configuration
+router ospf 1
+ router-id 1.1.1.1
+!
+! MP-BGP EVPN Configuration
+router bgp 65001
+ bgp router-id 11.11.11.11
+ bgp log-neighbor-changes
+ neighbor 99.99.99.99 remote-as 65001
+ neighbor 99.99.99.99 update-source Loopback1
+ !
+ address-family l2vpn evpn
+  neighbor 99.99.99.99 activate
+  neighbor 99.99.99.99 send-community both
+ !
+ address-family ipv4 vrf Tenant-A
+  redistribute connected
+end

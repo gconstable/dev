@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<lab name="Cisco_EVPN_VXLAN_BestPractice" id="f9d4c72a-44e2-4c22-990a-11dcf85b2321" version="1" scripttimeout="300" lock="0">
+  <topology>
+    <nodes>
+      <node id="1" name="Spine-1" type="qemu" template="csr1000v" ram="3072" left="450" top="100" icon="Router.png" ethernet="4"/>
+      <node id="2" name="Leaf-1" type="qemu" template="csr1000v" ram="3072" left="300" top="250" icon="Router.png" ethernet="4"/>
+      <node id="3" name="Leaf-2" type="qemu" template="csr1000v" ram="3072" left="600" top="250" icon="Router.png" ethernet="4"/>
+      <node id="4" name="Client-1" type="vpcs" template="vpcs" ram="128" left="300" top="400" icon="Desktop.png" ethernet="4"/>
+      <node id="5" name="Client-2" type="vpcs" template="vpcs" ram="128" left="600" top="400" icon="Desktop.png" ethernet="4"/>
+    </nodes>
+    <networks>
+      <network id="1" type="bridge" name="Net_Spine_Leaf1"/>
+      <network id="2" type="bridge" name="Net_Spine_Leaf2"/>
+      <network id="3" type="bridge" name="Net_Client_1"/>
+      <network id="4" type="bridge" name="Net_Client_2"/>
+    </networks>
+  </topology>
+</lab>
