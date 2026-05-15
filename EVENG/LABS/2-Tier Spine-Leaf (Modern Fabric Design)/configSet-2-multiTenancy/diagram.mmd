@@ -1,0 +1,83 @@
+graph TD
+    %% =========================================================================
+    %% STYLE DEFINITIONS & CLASSES
+    %% =========================================================================
+    classDef spineStyle fill:#1a365d,stroke:#2b6cb0,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef borderStyle fill:#2c5282,stroke:#4299e1,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef computeStyle fill:#2b6cb0,stroke:#63b3ed,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef extStyle fill:#2d3748,stroke:#4a5568,stroke-width:2px,color:#ffffff,font-weight:bold;
+    classDef linkStyleDef stroke:#718096,stroke-width:2px;
+    classDef dciStyle stroke:#e53e3e,stroke-width:3px,stroke-dasharray:5 5;
+
+    %% =========================================================================
+    %% DATA CENTER 1 (AS 65001 / IS-IS Area: 49.0001)
+    %% =========================================================================
+    subgraph DC1 ["DATA CENTER 1 (AS 65001 - IS-IS 49.0001)"]
+        %% Spine Tier (Isolated, No Cross-Links)
+        DC1-SPINE-01["fa:fa-network-wired DC1-SPINE-01<br>NET: 49.0001...0101.00<br>Loopback0: 10.1.0.101"]
+        DC1-SPINE-02["fa:fa-network-wired DC1-SPINE-02<br>NET: 49.0001...0102.00<br>Loopback0: 10.1.0.102"]
+        
+        %% Leaf Tier
+        DC1-LEAF-01["fa:fa-network-wired DC1-LEAF-01 (BORDER LEAF)<br>Loopback0: 10.1.0.1 (Local)<br>Loopback10: 10.100.0.1 (DCI)"]
+        DC1-LEAF-02["fa:fa-network-wired DC1-LEAF-02 (COMPUTE LEAF)<br>Loopback0: 10.1.0.2 (Local)<br>Anycast GW: 10.100.0.1"]
+        
+        %% Pure Clos Fabric Wiring Matrix (Point-to-Point L3 Subnets)
+        DC1-SPINE-01 -->|Hu1/0/1 <br> 192.168.1.0/30| DC1-LEAF-01
+        DC1-SPINE-01 -->|Hu1/0/2 <br> 192.168.1.4/30| DC1-LEAF-02
+        DC1-SPINE-02 -->|Hu1/0/1 <br> 192.168.1.8/30| DC1-LEAF-01
+        DC1-SPINE-02 -->|Hu1/0/2 <br> 192.168.1.12/30| DC1-LEAF-02
+        
+        %% Tenant External Security Demarcation (VRF-Lite Handoffs)
+        DC1-FW-A["fa:fa-shield-alt Tenant_A Firewall<br>VLAN 100 (.100)<br>IP: 172.16.100.2"]
+        DC1-FW-B["fa:fa-shield-alt Tenant_B Firewall<br>VLAN 200 (.200)<br>IP: 172.16.200.2"]
+        
+        DC1-LEAF-01 -->|Hu1/0/2.100 <br> VRF-Lite| DC1-FW-A
+        DC1-LEAF-01 -->|Hu1/0/2.200 <br> VRF-Lite| DC1-FW-B
+        
+        %% Local Compute Attachments
+        DC1-SERVER["fa:fa-server Blade Server<br>VLAN 100<br>TrustSec SGT 4"]
+        DC1-LEAF-02 -->|Te1/0/24| DC1-SERVER
+    end
+
+    %% =========================================================================
+    %% DATA CENTER 2 (AS 65002 / IS-IS Area: 49.0002)
+    %% =========================================================================
+    subgraph DC2 ["DATA CENTER 2 (AS 65002 - IS-IS 49.0002)"]
+        %% Spine Tier (Isolated, No Cross-Links)
+        DC2-SPINE-01["fa:fa-network-wired DC2-SPINE-01<br>NET: 49.0002...0201.00<br>Loopback0: 10.2.0.201"]
+        DC2-SPINE-02["fa:fa-network-wired DC2-SPINE-02<br>NET: 49.0002...0202.00<br>Loopback0: 10.2.0.202"]
+        
+        %% Leaf Tier
+        DC2-LEAF-01["fa:fa-network-wired DC2-LEAF-01 (BORDER LEAF)<br>Loopback0: 10.2.0.1 (Local)<br>Loopback10: 10.200.0.1 (DCI)"]
+        DC2-LEAF-02["fa:fa-network-wired DC2-LEAF-02 (COMPUTE LEAF)<br>Loopback0: 10.2.0.2 (Local)<br>Anycast GW: 10.100.0.1"]
+        
+        %% Pure Clos Fabric Wiring Matrix (Point-to-Point L3 Subnets)
+        DC2-SPINE-01 -->|Hu1/0/1 <br> 192.168.2.1/30| DC2-LEAF-01
+        DC2-SPINE-01 -->|Hu1/0/2 <br> 192.168.2.5/30| DC2-LEAF-02
+        DC2-SPINE-02 -->|Hu1/0/1 <br> 192.168.2.9/30| DC2-LEAF-01
+        DC2-SPINE-02 -->|Hu1/0/2 <br> 192.168.2.13/30| DC2-LEAF-02
+        
+        %% Tenant External Security Demarcation (VRF-Lite Handoffs)
+        DC2-FW-A["fa:fa-shield-alt Tenant_A Firewall<br>VLAN 100 (.100)<br>IP: 172.16.101.2"]
+        DC2-FW-B["fa:fa-shield-alt Tenant_B Firewall<br>VLAN 200 (.200)<br>IP: 172.16.201.2"]
+        
+        DC2-LEAF-01 -->|Hu1/0/2.100 <br> VRF-Lite| DC2-FW-A
+        DC2-LEAF-01 -->|Hu1/0/2.200 <br> VRF-Lite| DC2-FW-B
+        
+        %% Local Compute Attachments
+        DC2-SERVER["fa:fa-server Blade Server<br>VLAN 100<br>TrustSec SGT 4"]
+        DC2-LEAF-02 -->|Te1/0/24| DC2-SERVER
+    end
+
+    %% =========================================================================
+    %% DATA CENTER INTERCONNECT (DCI LONG-HAUL ROADWAY)
+    %% =========================================================================
+    DC1-LEAF-01 ===|eBGP Multi-hop EVPN Over L3 WAN Core <br> Transit Subnet: 172.16.1.0/30 <br> Data Plane Encapsulation: L3 VNI 50001 & 50002| DC2-LEAF-01
+
+    %% =========================================================================
+    %% APPLY STYLES
+    %% =========================================================================
+    class DC1-SPINE-01,DC1-SPINE-02,DC2-SPINE-01,DC2-SPINE-02 spineStyle;
+    class DC1-LEAF-01,DC2-LEAF-01 borderStyle;
+    class DC1-LEAF-02,DC2-LEAF-02 computeStyle;
+    class DC1-FW-A,DC1-FW-B,DC2-FW-A,DC2-FW-B,DC1-SERVER,DC2-SERVER extStyle;
