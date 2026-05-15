@@ -1,0 +1,102 @@
+! ================================================================================
+! SCRIPT 1: DATA CENTER ONE (DC-1) - SPINE SWITCH 01 INITIALISATION
+! ================================================================================
+hostname DC1-SPINE-01
+!
+! ------------------------------------------------------------------------------
+! SECTION 1: GLOBAL SYSTEM MAXIMUM TRANSMISSION UNIT (MTU) PROVISIONING
+! ------------------------------------------------------------------------------
+! SYSTEM MTU MECHANICS & OPERATIONAL BENEFIT:
+! This setting forces the hardware switching ASICs to accept frames up to 9100 bytes. 
+! Data center overlays add an unavoidable 50-byte encapsulation wrapper (Outer MAC, 
+! Outer IP, UDP, and VXLAN headers) onto original payloads. Spines handle high-speed 
+! transport for these packets. If the MTU is kept at the default 1500, any standard 
+! payload entering the fabric will require fragmenting in software via the CPU, or 
+! will be silently dropped. Setting 9100 allows line-rate transmission of full 9000-byte 
+! Jumbo Frames with overhead headroom, maximizing application throughput across storage 
+! and compute layers.
+!
+system mtu 9100
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: IS-IS UNDERLAY ROUTING PROTOCOL ENGINE
+! ------------------------------------------------------------------------------
+! UNDERLAY ARCHITECTURE MECHANICS & OPERATIONAL BENEFIT:
+! IS-IS provides Layer 3 topology discovery for VTEP-to-VTEP tunnel reachability.
+!
+! WHY LEVEL-2-ONLY? By default, IS-IS runs both Level 1 (intra-area) and Level 2 
+! (inter-area) databases. Spine-Leaf data center designs are inherently flat, non-hierarchical 
+! fabrics where every leaf needs visibility of every other leaf's loopback. Running 
+! both levels creates redundant Link State Databases (LSDB) and sub-optimal route leaking. 
+! Enforcing 'is-type level-2-only' limits the switch to a single backbone database, reducing 
+! control-plane CPU cycles and saving memory.
+!
+! WHY WIDE METRICS? Standard IS-IS metrics utilize a narrow 6-bit field limiting link 
+! costs to 63. This masks the performance difference between modern high-speed 
+! paths (e.g., 25G vs 100G). 'metric-style wide' scales the link cost limit to 16,777,215, 
+! giving the routing engine the necessary granularity to calculate correct Equal-Cost 
+! Multi-Pathing (ECMP) across high-speed backplane infrastructures.
+!
+router isis DC-FABRIC
+ net 49.0001.0000.0000.0101.00   ! Area 49.0001, Unique System ID 0000.0000.0101
+ is-type level-2-only
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0     ! Prevents hello transmission on the loopback to reduce control-plane chatter
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL LAYER 3 BACKBONE INTERFACES
+! ------------------------------------------------------------------------------
+! LINK SELECTION MECHANICS & OPERATIONAL BENEFIT:
+! Forcing 'isis network point-to-point' alters the IS-IS operational state from a 
+! shared media multi-access state to a direct link state. This disables the dynamic 
+! Designated Intermediate System (DIS) election and its associated 10-second polling 
+! timers. In the event of a physical fiber cut or transceiver failure, sub-second 
+! convergence is achieved because the neighbor state drops instantly, forcing traffic 
+! onto alternative ECMP paths.
+!
+interface Loopback0
+ description BGP_EVPN_PEERING_SOURCE_LOOPBACK
+ ip address 10.1.0.101 255.255.255.255
+ ip router isis DC-FABRIC
+!
+interface HundredGigE1/0/1
+ description L3_LINK_DOWN_TO_DC1-LEAF-01
+ no switchport
+ ip address 192.168.1.1 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+interface HundredGigE1/0/2
+ description L3_LINK_DOWN_TO_DC1-LEAF-02
+ no switchport
+ ip address 192.168.1.5 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+! ------------------------------------------------------------------------------
+! SECTION 4: MULTIPROTOCOL BGP OVERLAY CONTROL PLANE (ROUTE REFLECTOR)
+! ------------------------------------------------------------------------------
+! CONTROL PLANE MECHANICS & OPERATIONAL BENEFIT:
+! Standard iBGP networks require a full mesh of peerings between all nodes to prevent 
+! routing loops. In large spine-leaf data centers, maintaining this mesh is operationally 
+! complex. Setting 'route-reflector-client' allows the Spine to echo EVPN NLRIs 
+! (Network Layer Reachability Information) across all Leaf switches. The control plane remains 
+! lightweight and highly scalable, as Leaf nodes only need to peer with the Spines.
+!
+router bgp 65001
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ !
+ neighbor LEAF-EVPN-PEERS peer-group
+ neighbor LEAF-EVPN-PEERS remote-as 65001
+ neighbor LEAF-EVPN-PEERS update-source Loopback0
+ !
+ neighbor 10.1.0.1 peer-group LEAF-EVPN-PEERS  ! Peering connection to Leaf 01
+ neighbor 10.1.0.2 peer-group LEAF-EVPN-PEERS  ! Peering connection to Leaf 02
+ !
+ address-family l2vpn evpn
+  neighbor LEAF-EVPN-PEERS activate
+  neighbor LEAF-EVPN-PEERS route-reflector-client
+  neighbor LEAF-EVPN-PEERS send-community both
+ exit-address-family

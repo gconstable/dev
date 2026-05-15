@@ -1,0 +1,182 @@
+! ================================================================================
+! SCRIPT 3: DATA CENTER ONE (DC-1) - LEAF SWITCH 01 (BORDER GATEWAY ROLE)
+! ================================================================================
+hostname DC1-LEAF-01
+!
+! ------------------------------------------------------------------------------
+! SECTION 1: GLOBAL SYSTEM MAXIMUM TRANSMISSION UNIT (MTU) PROVISIONING
+! ------------------------------------------------------------------------------
+! SYSTEM MTU MECHANICS & OPERATIONAL BENEFIT:
+! This setting forces the hardware switching ASICs to accept frames up to 9100 bytes. 
+! Data center overlays add an unavoidable 50-byte encapsulation wrapper (Outer MAC, 
+! Outer IP, UDP, and VXLAN headers) onto original payloads. Leaf switches perform encapsulation 
+! at the edge. If the MTU is kept at the default 1500, any standard payload entering 
+! the fabric will require fragmenting in software via the CPU, or will be silently dropped. 
+! Setting 9100 allows line-rate transmission of full 9000-byte Jumbo Frames with overhead 
+! headroom, maximizing application throughput across storage and compute layers.
+!
+system mtu 9100
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: IS-IS UNDERLAY ROUTING PROTOCOL ENGINE
+! ------------------------------------------------------------------------------
+! UNDERLAY ARCHITECTURE MECHANICS & OPERATIONAL BENEFIT:
+! IS-IS provides Layer 3 topology discovery for VTEP-to-VTEP tunnel reachability.
+!
+! WHY LEVEL-2-ONLY? By default, IS-IS runs both Level 1 (intra-area) and Level 2 
+! (inter-area) databases. Spine-Leaf data center designs are inherently flat, non-hierarchical 
+! fabrics where every leaf needs visibility of every other leaf's loopback. Running 
+! both levels creates redundant Link State Databases (LSDB) and sub-optimal route leaking. 
+! Enforcing 'is-type level-2-only' limits the switch to a single backbone database, reducing 
+! control-plane CPU cycles and saving memory.
+!
+! WHY WIDE METRICS? Standard IS-IS metrics utilize a narrow 6-bit field limiting link 
+! costs to 63. This masks the performance difference between modern high-speed 
+! paths (e.g., 25G vs 100G). 'metric-style wide' scales the link cost limit to 16,777,215, 
+! giving the routing engine the necessary granularity to calculate correct Equal-Cost 
+! Multi-Pathing (ECMP) across high-speed backplane infrastructures.
+!
+router isis DC-FABRIC
+ net 49.0001.0000.0000.0001.00   ! Area 49.0001, Unique System ID 0000.0000.0001
+ is-type level-2-only
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0
+ passive-interface Loopback10    ! Reduces control plane routing overhead on external paths
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL LAYER 3 BACKBONE INTERFACES & DCI CIRCUITS
+! ------------------------------------------------------------------------------
+! SEGREGATED LOOPBACK MECHANICS & OPERATIONAL BENEFIT:
+! Loopback0 is bound to internal site VTEP tunnel operations. Loopback10 handles the 
+! eBGP cross-DC multi-site transport mapping. Separating these loopbacks ensures that if 
+! an internal link flap occurs, the long-haul Data Center Interconnect (DCI) routing table 
+! remains completely unaffected, maintaining continuous operations between locations.
+! Forcing 'isis network point-to-point' disables the dynamic Designated Intermediate 
+! System (DIS) election and its associated 10-second polling timers. In the event of a 
+! physical fiber cut or transceiver failure, sub-second convergence is achieved because 
+! the neighbor state drops instantly, forcing traffic onto alternative ECMP paths.
+!
+interface Loopback0
+ description SITE_INTERNAL_VXLAN_VTEP_SOURCE
+ ip address 10.1.0.1 255.255.255.255
+ ip router isis DC-FABRIC
+!
+interface Loopback10
+ description EXTERNAL_CROSS-SITE_BORDER_VTEP
+ ip address 10.100.0.1 255.255.255.255
+ ip router isis DC-FABRIC
+!
+interface TwentyFiveGigE1/0/1
+ description L3_UPLINK_TO_DC1-SPINE-01
+ no switchport
+ ip address 192.168.1.2 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+interface TwentyFiveGigE1/0/2
+ description L3_UPLINK_TO_DC1-SPINE-02
+ no switchport
+ ip address 192.168.1.10 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+interface HundredGigE1/0/1
+ description PHYSICAL_DCI_CIRCUIT_TO_DC2
+ no switchport
+ ip address 172.16.1.1 255.255.255.252
+!
+! ------------------------------------------------------------------------------
+! SECTION 4: MULTIPROTOCOL BGP OVERLAY & INTER-SITE CROSS-DC PEERING
+! ------------------------------------------------------------------------------
+! PEERING STRATEGY MECHANICS & OPERATIONAL BENEFIT:
+! This node isolates internal iBGP path distributions from external eBGP multi-site updates. 
+! It targets internal Spines to gather local node state info, while initiating an 
+! eBGP Multihop session across the DCI to the peer data center Border Gateway. This architecture 
+! keeps external failure domains isolated, protecting internal compute blocks from remote failures.
+!
+router bgp 65001
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ !
+ neighbor INT-EVPN-SPINES peer-group
+ neighbor INT-EVPN-SPINES remote-as 65001
+ neighbor INT-EVPN-SPINES update-source Loopback0
+ neighbor 10.1.0.101 peer-group INT-EVPN-SPINES
+ neighbor 10.1.0.102 peer-group INT-EVPN-SPINES
+ !
+ neighbor DCI-EVPN-PEERS peer-group
+ neighbor DCI-EVPN-PEERS remote-as 65002
+ neighbor DCI-EVPN-PEERS ebgp-multihop 5
+ neighbor DCI-EVPN-PEERS update-source Loopback10
+ neighbor 10.200.0.1 peer-group DCI-EVPN-PEERS  ! External peering target address at DC-2
+ !
+ address-family l2vpn evpn
+  neighbor INT-EVPN-SPINES activate
+  neighbor INT-EVPN-SPINES send-community both
+  neighbor DCI-EVPN-PEERS activate
+  neighbor DCI-EVPN-PEERS send-community both
+ exit-address-family
+!
+! ------------------------------------------------------------------------------
+! SECTION 5: DATA PLANE EXTENSION & L2 VNI STITCHING
+! ------------------------------------------------------------------------------
+! OVERLAY ALIGNMENT MECHANICS & OPERATIONAL BENEFIT:
+! The 'stitcheddomain-remote' parameter prevents local end-user host flapping from 
+! broadcasting across the DCI path. It acts as an operational boundary, encapsulating and 
+! translating local inner VNIs to inter-site transport structures only when valid cross-site 
+! flows are initiated. This optimizes bandwidth and prevents WAN performance degradation.
+!
+vlan 100
+ name SERVERS_ZONE_A
+ vxlan vni 10100
+!
+evpn multi-site border-gateway vtep-tracking
+ site-id 101
+!
+evpn vni 10100 l2
+ rd auto
+ route-target export auto
+ route-target import auto
+ route-target export stitcheddomain-remote auto
+ route-target import stitcheddomain-remote auto
+!
+interface nve1
+ no ip address
+ source-interface Loopback0
+ multi-site bgw-if Loopback10
+ member vni 10100 mcast-group 239.1.1.100
+!
+! ------------------------------------------------------------------------------
+! SECTION 6: CLIENT ANYCAST GATEWAY INTERFACES
+! ------------------------------------------------------------------------------
+! ANYCAST GATEWAY MECHANICS & OPERATIONAL BENEFIT:
+! Configuring the identical IP and virtual MAC address across all data centers provides 
+! a universal default gateway for virtual workloads. When servers migrate via vMotion 
+! across physical sites, they keep their existing gateway settings. This maintains network 
+! access immediately without needing Address Resolution Protocol (ARP) updates or 
+! traffic hair-pinning back to the originating location.
+!
+interface Vlan100
+ description ANYCAST_DEFAULT_GATEWAY
+ ip address 10.100.0.1 255.255.255.0
+ mac-address 0000.1111.2222
+ anycast-gateway enable
+!
+! ------------------------------------------------------------------------------
+! SECTION 7: INLINE TRUSTSEC IDENTITY POLICY ENFORCEMENT
+! ------------------------------------------------------------------------------
+! SECURITY METADATA MECHANICS & OPERATIONAL BENEFIT:
+! Cisco TrustSec embeds an inline Security Group Tag (SGT) directly into the Layer 2 
+! frame payload metadata. This tag is preserved inside the VXLAN header as it moves 
+! across the fabric and the DCI path. Security rules can then be enforced based on structural 
+! roles (e.g., 'Web Servers') rather than brittle, hardcoded IP access lists.
+!
+cts inline-tagging
+!
+interface TwentyFiveGigE1/0/24
+ description BARE_METAL_COMPUTE_SERVER
+ switchport access vlan 100
+ switchport mode access
+ cts manual
+  policy static sgt 4

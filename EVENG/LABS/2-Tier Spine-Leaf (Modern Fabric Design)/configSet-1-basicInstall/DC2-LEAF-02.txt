@@ -1,0 +1,125 @@
+! ================================================================================
+! SCRIPT 8: DATA CENTER TWO (DC-2) - LEAF SWITCH 02 (COMPUTE NODE ROLE)
+! ================================================================================
+hostname DC2-LEAF-02
+!
+! ------------------------------------------------------------------------------
+! SECTION 1: GLOBAL SYSTEM MAXIMUM TRANSMISSION UNIT (MTU) PROVISIONING
+! ------------------------------------------------------------------------------
+! BENEFIT: Sets the standard 9100 fabric MTU. This configuration ensures that line-rate 
+! edge ports handle local server frame transmission seamlessly, aligning with the 
+! upstream Spines to eliminate encapsulation fragmentation risks across the fabric backbone.
+!
+system mtu 9100
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: IS-IS UNDERLAY ROUTING PROTOCOL ENGINE
+! ------------------------------------------------------------------------------
+! BENEFIT: Runs the matching underlay routing profile for the local site area. 
+! Level-2-only allocation keeps state metrics lean, while wide metrics maintain 
+! precise path selection calculations across modern high-speed local fiber uplinks.
+!
+router isis DC-FABRIC
+ net 49.0002.0000.0000.0002.00   ! Area 49.0002, Unique System ID 0000.0000.0002
+ is-type level-2-only
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0     ! Isolates control traffic from peering loopbacks
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL LAYER 3 BACKBONE INTERFACES
+! ------------------------------------------------------------------------------
+! BENEFIT: Configures point-to-point lines to bypass the standard DIS election process. 
+! This ensures that link failures spark immediate convergence, keeping local server 
+! sessions online via secondary path selection matrices.
+!
+interface Loopback0
+ description SITE_INTERNAL_VXLAN_VTEP_SOURCE
+ ip address 10.2.0.2 255.255.255.255
+ ip router isis DC-FABRIC
+!
+interface TwentyFiveGigE1/0/1
+ description L3_UPLINK_TO_DC2-SPINE-01
+ no switchport
+ ip address 192.168.2.6 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+interface TwentyFiveGigE1/0/2
+ description L3_UPLINK_TO_DC2-SPINE-02
+ no switchport
+ ip address 192.168.2.14 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+! ------------------------------------------------------------------------------
+! SECTION 4: MULTIPROTOCOL BGP OVERLAY CONTROL PLANE
+! ------------------------------------------------------------------------------
+! BENEFIT: Establishes internal peering groups directly targeting local site Spines. 
+! This compute switch uses the Spine Route Reflectors to efficiently learn and process 
+! fabric reachability maps, preventing control plane processing fatigue.
+!
+router bgp 65002
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor INT-EVPN-SPINES peer-group
+ neighbor INT-EVPN-SPINES remote-as 65002
+ neighbor INT-EVPN-SPINES update-source Loopback0
+ neighbor 10.2.0.201 peer-group INT-EVPN-SPINES
+ neighbor 10.2.0.202 peer-group INT-EVPN-SPINES
+ !
+ address-family l2vpn evpn
+  neighbor INT-EVPN-SPINES activate
+  neighbor INT-EVPN-SPINES send-community both
+ exit-address-family
+!
+! ------------------------------------------------------------------------------
+! SECTION 5: DATA PLANE EXTENSION PARAMETERS
+! ------------------------------------------------------------------------------
+! BENEFIT: Implements local data plane mapping parameters. These configurations link 
+! client VLAN spaces directly into the overlay VNI, ensuring uniform data plane encapsulation 
+! for compute workloads across the switch fabric.
+!
+vlan 100
+ name SERVERS_ZONE_A
+ vxlan vni 10100
+!
+evpn vni 10100 l2
+ rd auto
+ route-target export auto
+ route-target import auto
+!
+interface nve1
+ no ip address
+ source-interface Loopback0
+ member vni 10100 mcast-group 239.1.1.100
+!
+! ------------------------------------------------------------------------------
+! SECTION 6: CLIENT ANYCAST GATEWAY INTERFACES
+! ------------------------------------------------------------------------------
+! BENEFIT: provisions the unified default gateway structure locally. Servers mapped 
+! to this port use the exact same MAC and gateway IP configurations across the entire 
+! fabric, allowing zero-reconfig portability.
+!
+interface Vlan100
+ description ANYCAST_DEFAULT_GATEWAY
+ ip address 10.100.0.1 255.255.255.0
+ mac-address 0000.1111.2222        ! Must match the Virtual MAC used in DC-1 perfectly
+ anycast-gateway enable
+!
+! ------------------------------------------------------------------------------
+! SECTION 7: INLINE TRUSTSEC IDENTITY POLICY ENFORCEMENT
+! ------------------------------------------------------------------------------
+! BENEFIT: Enforces hardware-linked Security Group Tags (SGT) directly on the 
+! access ports. This policy data travels within the VXLAN headers across the cross-DC 
+! tunnel, allowing role-based access controls to persist seamlessly without needing 
+! complex IP-to-ACL synchronization.
+!
+cts inline-tagging
+!
+interface TwentyFiveGigE1/0/24
+ description BARE_METAL_COMPUTE_SERVER
+ switchport access vlan 100
+ switchport mode access
+ cts manual
+  policy static sgt 4              ! Assigns Security Group Tag 4 (Web Servers)

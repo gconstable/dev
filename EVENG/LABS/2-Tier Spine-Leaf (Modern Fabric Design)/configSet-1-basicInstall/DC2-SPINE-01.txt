@@ -1,0 +1,91 @@
+! ================================================================================
+! SCRIPT 5: DATA CENTER TWO (DC-2) - SPINE SWITCH 01 INITIALISATION
+! ================================================================================
+hostname DC2-SPINE-01
+!
+! ------------------------------------------------------------------------------
+! SECTION 1: GLOBAL SYSTEM MAXIMUM TRANSMISSION UNIT (MTU) PROVISIONING
+! ------------------------------------------------------------------------------
+! BENEFIT: Increasing the system MTU globally to 9100 on this Spine is an absolute 
+! requirement for the physical transport layer of the fabric. The Spines act as the L3 
+! transit core and must process packets wrapped with the 50-Byte VXLAN encapsulation 
+! overhead (Outer MAC, Outer IP, UDP, and VXLAN headers). Setting this value prevents 
+! performance-degrading software fragmentation and packet drops, allowing the end-to-end 
+! network to safely pass standard 9000-Byte Jumbo Frames.
+!
+system mtu 9100
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: IS-IS UNDERLAY ROUTING PROTOCOL ENGINE
+! ------------------------------------------------------------------------------
+! BENEFIT: IS-IS serves as the foundational physical path tracking engine for the 
+! internal underlay network.
+! WHY LEVEL-2-ONLY? Standard IS-IS builds and maintains separate databases for Level 1 
+! (intra-area) and Level 2 (inter-area) routing. In a non-hierarchical, flat data center 
+! Spine-Leaf topology, all switches require identical visibility. Restricting operations 
+! to Level-2-Only eliminates tracking redundancies, drastically decreases control plane 
+! memory utilization, and prevents suboptimal Level-1-to-Level-2 route leaking.
+! WHY WIDE METRICS? Legacy narrow metrics limit interface costs to a maximum of 63. 
+! Enabling wide metrics increases this limit to 16,777,215, allowing the routing engine 
+! to accurately calculate optimal path selections across modern high-speed 25G, 40G, 
+! and 100G fabric interlinks.
+!
+router isis DC-FABRIC
+ net 49.0002.0000.0000.0201.00   ! Area 49.0002 (DC-2 Isolation), System ID 0000.0000.0201
+ is-type level-2-only
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0     ! Prevents dynamic hello packet generation on internal tracking loopbacks
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL LAYER 3 BACKBONE INTERFACES
+! ------------------------------------------------------------------------------
+! BENEFIT: Enforcing 'isis network point-to-point' bypasses the standard Designated 
+! Intermediate System (DIS) dynamic election and its associated multi-second poll timers. 
+! In the event of a fiber or link failure, this interface structure triggers 
+! instantaneous neighbor state changes, allowing sub-second hardware routing convergence.
+!
+interface Loopback0
+ description BGP_EVPN_PEERING_SOURCE_LOOPBACK
+ ip address 10.2.0.201 255.255.255.255
+ ip router isis DC-FABRIC
+!
+interface HundredGigE1/0/1
+ description L3_LINK_DOWN_TO_DC2-LEAF-01
+ no switchport
+ ip address 192.168.2.1 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+interface HundredGigE1/0/2
+ description L3_LINK_DOWN_TO_DC2-LEAF-02
+ no switchport
+ ip address 192.168.2.5 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+! ------------------------------------------------------------------------------
+! SECTION 4: MULTIPROTOCOL BGP OVERLAY CONTROL PLANE (ROUTE REFLECTOR)
+! ------------------------------------------------------------------------------
+! BENEFIT: The Spine is configured as an MP-BGP Route Reflector for the EVPN 
+! control plane overlay. This structural choice scales the overlay by removing the 
+! requirement for a complex, unstable full-mesh of peerings between every Leaf switch. 
+! The Leaf nodes only maintain peerings with the Spines to advertise and learn the 
+! reachability profiles of cross-fabric endpoints.
+!
+router bgp 65002
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ !
+ neighbor LEAF-EVPN-PEERS peer-group
+ neighbor LEAF-EVPN-PEERS remote-as 65002
+ neighbor LEAF-EVPN-PEERS update-source Loopback0
+ !
+ neighbor 10.2.0.1 peer-group LEAF-EVPN-PEERS  ! Peering session to DC-2 Border Leaf 01
+ neighbor 10.2.0.2 peer-group LEAF-EVPN-PEERS  ! Peering session to DC-2 Compute Leaf 02
+ !
+ address-family l2vpn evpn
+  neighbor LEAF-EVPN-PEERS activate
+  neighbor LEAF-EVPN-PEERS route-reflector-client
+  neighbor LEAF-EVPN-PEERS send-community both
+ exit-address-family

@@ -1,0 +1,157 @@
+! ================================================================================
+! SCRIPT 7: DATA CENTER TWO (DC-2) - LEAF SWITCH 01 (BORDER GATEWAY ROLE)
+! ================================================================================
+hostname DC2-LEAF-01
+!
+! ------------------------------------------------------------------------------
+! SECTION 1: GLOBAL SYSTEM MAXIMUM TRANSMISSION UNIT (MTU) PROVISIONING
+! ------------------------------------------------------------------------------
+! BENEFIT: Globally enforces an MTU of 9100. This leaf acts as the multi-site 
+! border entry point and must encapsulate ingress server frames into VXLAN tunnels. 
+! Ensuring matching MTU parameters across the physical line prevents frame fragmentation 
+! at the boundary edge, maximizing line-rate hardware switching matrices.
+!
+system mtu 9100
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: IS-IS UNDERLAY ROUTING PROTOCOL ENGINE
+! ------------------------------------------------------------------------------
+! BENEFIT: Runs the underlay engine matching the local site area. Level-2-only database 
+! allocation ensures lean state maintenance and limits convergence domains, while wide 
+! metrics provide accurate cost mapping for high-speed local downlinks.
+!
+router isis DC-FABRIC
+ net 49.0002.0000.0000.0001.00   ! Area 49.0002, Unique System ID 0000.0000.0001
+ is-type level-2-only
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0     ! Isolates control traffic from peering loopbacks
+ passive-interface Loopback10    ! Isolates control traffic from multi-site loopbacks
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL LAYER 3 BACKBONE & DCI INTERFACES
+! ------------------------------------------------------------------------------
+! BENEFIT: Split Loopback infrastructure isolates internal site dependencies from 
+! external cross-site transport boundaries. Loopback0 anchors the local internal 
+! VTEP source. Loopback10 provisions a distinct tracking space for external Border 
+! Gateway control sessions across the dedicated Data Center Interconnect (DCI).
+!
+interface Loopback0
+ description SITE_INTERNAL_VXLAN_VTEP_SOURCE
+ ip address 10.2.0.1 255.255.255.255
+ ip router isis DC-FABRIC
+!
+interface Loopback10
+ description EXTERNAL_CROSS-SITE_BORDER_VTEP
+ ip address 10.200.0.1 255.255.255.255
+ ip router isis DC-FABRIC
+!
+interface TwentyFiveGigE1/0/1
+ description L3_UPLINK_TO_DC2-SPINE-01
+ no switchport
+ ip address 192.168.2.2 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+interface TwentyFiveGigE1/0/2
+ description L3_UPLINK_TO_DC2-SPINE-02
+ no switchport
+ ip address 192.168.2.10 255.255.255.252
+ ip router isis DC-FABRIC
+ isis network point-to-point
+!
+interface HundredGigE1/0/1
+ description PHYSICAL_DCI_CIRCUIT_TO_DC1
+ no switchport
+ ip address 172.16.1.2 255.255.255.252
+!
+! ------------------------------------------------------------------------------
+! SECTION 4: MULTIPROTOCOL BGP OVERLAY & INTER-SITE CROSS-DC PEERING
+! ------------------------------------------------------------------------------
+! BENEFIT: Isolates internal peer groupings from long-haul external routing planes. 
+! The Leaf peers with local site Spines to map local workload environments, while 
+! establishing an eBGP Multihop session over the DCI to the DC-1 Border Gateway. 
+! This architecture cleanly bridges the control planes of both data centers without 
+! creating inter-site dependency loops.
+!
+router bgp 65002
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ !
+ neighbor INT-EVPN-SPINES peer-group
+ neighbor INT-EVPN-SPINES remote-as 65002
+ neighbor INT-EVPN-SPINES update-source Loopback0
+ neighbor 10.2.0.201 peer-group INT-EVPN-SPINES
+ neighbor 10.2.0.202 peer-group INT-EVPN-SPINES
+ !
+ neighbor DCI-EVPN-PEERS peer-group
+ neighbor DCI-EVPN-PEERS remote-as 65001
+ neighbor DCI-EVPN-PEERS ebgp-multihop 5
+ neighbor DCI-EVPN-PEERS update-source Loopback10
+ neighbor 10.100.0.1 peer-group DCI-EVPN-PEERS  ! External peering session to DC-1 BGW
+ !
+ address-family l2vpn evpn
+  neighbor INT-EVPN-SPINES activate
+  neighbor INT-EVPN-SPINES send-community both
+  neighbor DCI-EVPN-PEERS activate
+  neighbor DCI-EVPN-PEERS send-community both
+ exit-address-family
+!
+! ------------------------------------------------------------------------------
+! SECTION 5: DATA PLANE EXTENSION & L2 VNI STITCHING
+! ------------------------------------------------------------------------------
+! BENEFIT: Multi-site border configurations leverage 'stitcheddomain' properties to 
+! enforce clean boundary scaling. Local compute updates and MAC changes remain completely 
+! localized to the DC-2 fabric, preventing remote host stability issues from impacting 
+! core performance across the long-haul DCI line.
+!
+vlan 100
+ name SERVERS_ZONE_A
+ vxlan vni 10100
+!
+evpn multi-site border-gateway vtep-tracking
+ site-id 202
+!
+evpn vni 10100 l2
+ rd auto
+ route-target export auto
+ route-target import auto
+ route-target export stitcheddomain-remote auto
+ route-target import stitcheddomain-remote auto
+!
+interface nve1
+ no ip address
+ source-interface Loopback0
+ multi-site bgw-if Loopback10
+ member vni 10100 mcast-group 239.1.1.100
+!
+! ------------------------------------------------------------------------------
+! SECTION 6: CLIENT ANYCAST GATEWAY INTERFACES
+! ------------------------------------------------------------------------------
+! BENEFIT: Mirroring identical virtual MAC addresses and anycast IP structures across 
+! both geographic data center footprints creates a unified logical default gateway. 
+! Virtual server workloads can undergo cross-site host migrations (vMotion) transparently, 
+! without necessitating default gateway re-learning or traffic hair-pinning.
+!
+interface Vlan100
+ description ANYCAST_DEFAULT_GATEWAY
+ ip address 10.100.0.1 255.255.255.0
+ mac-address 0000.1111.2222        ! Must match the Virtual MAC used in DC-1 perfectly
+ anycast-gateway enable
+!
+! ------------------------------------------------------------------------------
+! SECTION 7: INLINE TRUSTSEC IDENTITY POLICY ENFORCEMENT
+! ------------------------------------------------------------------------------
+! BENEFIT: Enforces hardware-linked Security Group Tags (SGT) directly on the 
+! access ports. This policy data travels within the VXLAN headers across the cross-DC 
+! tunnel, allowing role-based access controls to persist seamlessly without needing 
+! complex IP-to-ACL synchronization.
+!
+cts inline-tagging
+!
+interface TwentyFiveGigE1/0/24
+ description BARE_METAL_COMPUTE_SERVER
+ switchport access vlan 100
+ switchport mode access
+ cts manual
+  policy static sgt 4              ! Assigns Security Group Tag 4 (Web Servers)
