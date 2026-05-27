@@ -9,6 +9,12 @@ interface Loopback10
  ip address 10.10.0.4 255.255.255.255
  ip router isis INFRA-FABRIC
 !
+interface Vlan10
+ vrf forwarding Customer_A
+ ip address 10.10.10.2 255.255.255.0
+ no autostate
+end
+!
 
 ! ------------------------------------------------------------------------------
 ! SECTION 2: BGP
@@ -33,12 +39,18 @@ router bgp 65000
   neighbor 10.10.0.2 activate
   neighbor 10.10.0.2 send-community both
 
+ address-family ipv4 vrf Customer_A
+  advertise l2vpn evpn allow-suppressed
+  redistribute static
+  redistribute connected
+ exit-address-family
+
 ! ------------------------------------------------------------------------------
 ! SECTION 3: Multi-Tenant VRF & VXLAN EVPN Mapping
 ! ------------------------------------------------------------------------------
 
 !Configure VRF A
-vrf definition Tenant_A
+vrf definition Customer_A
  rd 10.10.0.4:10010
  address-family ipv4
  route-target export 65000:10010 stitching
@@ -50,12 +62,11 @@ interface nve1
  no ip address
  source-interface Loopback10
  host-reachability protocol bgp
- member vni 10010 ingress-replication
+ member vni 10010 vrf Customer_A
 !
 
-
 ! ------------------------------------------------------------------------------
-! SECTION 4: CUSTOMER ACCESS + ANYCAST GATEWAY CONFIG
+! SECTION 4: CUSTOMER ACCESS
 ! ------------------------------------------------------------------------------
 
 ! On Catalyst 9500 Switches ONLY:
@@ -73,3 +84,4 @@ l2vpn evpn instance 10 vlan-based
  encapsulation vxlan
  replication-type ingress
 !
+
