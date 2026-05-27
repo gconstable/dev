@@ -1,0 +1,44 @@
+! ------------------------------------------------------------------------------
+! SECTION 1: CREATE LAYER 2 CONFIG
+! ------------------------------------------------------------------------------
+!
+vlan 12
+ name Tenant_C
+!
+vlan configuration 12
+ member evpn-instance 12 vni 10012
+!
+l2vpn evpn
+ replication-type ingress
+ router-id loopback10
+ default-gateway advertise
+!
+l2vpn evpn instance 12 vlan-based
+ encapsulation vxlan
+ replication-type ingress
+!
+! EDIT VTEP (NVE) - ADD ADDITIONAL VNI FOR TENANT_C
+!
+interface nve 1
+ member vni 10012 ingress-replication
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: CREATE INTERFACES & ADD ETHERNET SEGMENT TO INTERFACES
+! ------------------------------------------------------------------------------
+!
+interface GigabitEthernet1/0/12
+ switchport access vlan 12
+ switchport mode access
+ spanning-tree portfast
+ description ACCESS_TO_TENANT_C
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: CREATE ANYCAST GATEWAY CONFIG
+! ------------------------------------------------------------------------------
+!
+interface Vlan12
+ description ANYCAST_GATEWAY_FOR_TENANT_C
+ ip address 10.10.12.1 255.255.255.0
+ no autostate
+ mac-address 0000.1212.1212
+!

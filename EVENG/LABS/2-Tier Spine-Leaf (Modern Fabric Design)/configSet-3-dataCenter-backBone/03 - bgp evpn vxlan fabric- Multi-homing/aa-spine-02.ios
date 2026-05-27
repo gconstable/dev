@@ -1,0 +1,51 @@
+! ------------------------------------------------------------------------------
+! SECTION 1: CREATE LAYER 2 CONFIG
+! ------------------------------------------------------------------------------
+!
+vlan 11
+ name Tenant_B
+!
+vlan configuration 11
+ member evpn-instance 11 vni 10011
+!
+l2vpn evpn
+ replication-type static
+ router-id loopback10
+ default-gateway advertise
+!
+l2vpn evpn instance 11 vlan-based
+ encapsulation vxlan
+ replication-type ingress
+!
+! CREATES ETHERNET SEGMENT FOR MULTI-HOMING
+!
+l2vpn evpn ethernet-segment 1
+ identifier type 0 01.01.01.01.01.01.01.01.01
+ redundancy single-active
+!
+! EDITE VTEP (NVE) - ADD ADDITIONAL VNI FOR TENANT_B
+!
+interface nve 1
+ member vni 10011 ingress-replication
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: CREATE INTERFACES & ADD ETHERNET SEGMENT TO INTERFACES
+! ------------------------------------------------------------------------------
+!
+interface GigabitEthernet1/0/11
+ switchport access vlan 11
+ switchport mode access
+ evpn ethernet-segment 1
+ spanning-tree portfast
+ description ACCESS_TO_TENANT_B
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: CREATE ANYCAST GATEWAY CONFIG
+! ------------------------------------------------------------------------------
+!
+interface Vlan11
+ description ANYCAST_GATEWAY_FOR_TENANT_B
+ ip address 10.10.11.1 255.255.255.0
+ no autostate
+ mac-address 0000.1111.1111
+!

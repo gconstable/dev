@@ -60,14 +60,14 @@ interface Loopback0
  ip address 10.1.0.101 255.255.255.255
  ip router isis DC-FABRIC
 !
-interface HundredGigE1/0/1
+interface GigabitEthernet1/0/1
  description L3_LINK_DOWN_TO_DC1-LEAF-01
  no switchport
  ip address 192.168.1.1 255.255.255.252
  ip router isis DC-FABRIC
  isis network point-to-point
 !
-interface HundredGigE1/0/2
+interface GigabitEthernet1/0/2
  description L3_LINK_DOWN_TO_DC1-LEAF-02
  no switchport
  ip address 192.168.1.5 255.255.255.252

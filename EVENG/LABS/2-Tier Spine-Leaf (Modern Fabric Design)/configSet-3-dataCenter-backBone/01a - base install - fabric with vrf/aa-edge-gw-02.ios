@@ -1,0 +1,57 @@
+! ------------------------------------------------------------------------------
+! SECTION 1: STSTEM-WIDE SETTINGS
+! ------------------------------------------------------------------------------
+!
+hostname AA-EDGE-GW-02
+!
+ip routing
+!
+license boot level network-advantage addon dna-advantage
+!
+! system mtu 9100
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: CREATE VRF DEFINITION FOR FABRIC
+! ------------------------------------------------------------------------------
+!
+vrf definition VRF-INFRA-FABRIC
+ address-family ipv4
+ exit-address-family
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL LAYER 3 BACKBONE INTERFACES
+! ------------------------------------------------------------------------------
+!
+interface Loopback0
+ vrf forwarding VRF-INFRA-FABRIC
+ description ISIS-RID
+ ip address 10.1.0.2 255.255.255.255
+ ip router isis INFRA-FABRIC
+ 
+!
+interface Gi1
+ vrf forwarding VRF-INFRA-FABRIC
+ description L3_UPLINK_TO_SPINE_01
+ ip address 192.168.1.9 255.255.255.252
+ ip router isis INFRA-FABRIC
+ isis network point-to-point
+ no shutdown
+!
+interface Gi2
+ vrf forwarding VRF-INFRA-FABRIC
+ description L3_UPLINK_TO_SPINE_02
+ ip address 192.168.1.13 255.255.255.252
+ ip router isis INFRA-FABRIC
+ isis network point-to-point
+ no shutdown
+!
+router isis INFRA-FABRIC
+ net 49.0001.0000.0000.0002.00   ! Area 49.0001, Unique System ID 0000.0000.0001
+ is-type level-2-only
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0
+ vrf VRF-INFRA-FABRIC
+!
+
+

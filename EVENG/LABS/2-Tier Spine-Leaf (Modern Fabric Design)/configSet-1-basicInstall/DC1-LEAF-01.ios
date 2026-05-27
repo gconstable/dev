@@ -62,26 +62,28 @@ interface Loopback0
  ip address 10.1.0.1 255.255.255.255
  ip router isis DC-FABRIC
 !
+!
+! OVERLAPS WITH VLAN 100 INTERFACE !!! 
 interface Loopback10
  description EXTERNAL_CROSS-SITE_BORDER_VTEP
  ip address 10.100.0.1 255.255.255.255
  ip router isis DC-FABRIC
 !
-interface TwentyFiveGigE1/0/1
+interface GigabitEthernet1/0/1
  description L3_UPLINK_TO_DC1-SPINE-01
  no switchport
  ip address 192.168.1.2 255.255.255.252
  ip router isis DC-FABRIC
  isis network point-to-point
 !
-interface TwentyFiveGigE1/0/2
+interface GigabitEthernet1/0/2
  description L3_UPLINK_TO_DC1-SPINE-02
  no switchport
  ip address 192.168.1.10 255.255.255.252
  ip router isis DC-FABRIC
  isis network point-to-point
 !
-interface HundredGigE1/0/1
+interface GigabitEthernet1/0/3
  description PHYSICAL_DCI_CIRCUIT_TO_DC2
  no switchport
  ip address 172.16.1.1 255.255.255.252
@@ -129,8 +131,24 @@ router bgp 65001
 !
 vlan 100
  name SERVERS_ZONE_A
- vxlan vni 10100
 !
+vlan configuration 100
+ member evpn-instance 100 vni 10100
+!
+ member vni 10100
+  ingress-replication 10.255.255.2
+!
+interface nve1
+ no ip address
+ source-interface Loopback0
+ host-reachability protocol bgp
+ member vni 10100 mcast-group 239.1.1.100
+end
+!
+
+
+
+
 evpn multi-site border-gateway vtep-tracking
  site-id 101
 !
@@ -138,15 +156,10 @@ evpn vni 10100 l2
  rd auto
  route-target export auto
  route-target import auto
+
  route-target export stitcheddomain-remote auto
  route-target import stitcheddomain-remote auto
-!
-interface nve1
- no ip address
- source-interface Loopback0
- multi-site bgw-if Loopback10
- member vni 10100 mcast-group 239.1.1.100
-!
+
 ! ------------------------------------------------------------------------------
 ! SECTION 6: CLIENT ANYCAST GATEWAY INTERFACES
 ! ------------------------------------------------------------------------------
@@ -174,7 +187,7 @@ interface Vlan100
 !
 cts inline-tagging
 !
-interface TwentyFiveGigE1/0/24
+interface TGigabitEthernet1/0/10
  description BARE_METAL_COMPUTE_SERVER
  switchport access vlan 100
  switchport mode access

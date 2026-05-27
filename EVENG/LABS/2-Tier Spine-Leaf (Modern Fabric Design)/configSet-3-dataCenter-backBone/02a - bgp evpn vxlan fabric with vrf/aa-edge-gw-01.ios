@@ -1,0 +1,47 @@
+! ------------------------------------------------------------------------------
+! SECTION 0: NOTES
+! ------------------------------------------------------------------------------
+
+! ------------------------------------------------------------------------------
+! SECTION 1: INTERFACES
+! ------------------------------------------------------------------------------
+!
+interface Loopback10
+ description BGP_PEER_SOURCE
+ vrf forwarding VRF-INFRA-FABRIC
+ ip address 10.10.0.1 255.255.255.255
+ ip router isis INFRA-FABRIC
+!
+
+! ------------------------------------------------------------------------------
+! SECTION 2: BGP (EVPN)
+! ------------------------------------------------------------------------------
+
+!
+router bgp 65000
+ bgp router-id 10.10.0.1
+ bgp log-neighbor-changes
+!
+ neighbor 10.10.0.3 remote-as 65000
+ neighbor 10.10.0.3 update-source Loopback10
+ neighbor 10.10.0.4 remote-as 65000
+ neighbor 10.10.0.4 update-source Loopback10
+!
+ address-family ipv4
+  exit-address-family
+!
+ address-family l2vpn evpn
+  neighbor 10.10.0.3 activate
+  neighbor 10.10.0.3 send-community both
+  neighbor 10.10.0.3 route-reflector-client
+!
+  neighbor 10.10.0.4 activate
+  neighbor 10.10.0.4 send-community both
+  neighbor 10.10.0.4 route-reflector-client
+!
+ exit-address-family
+!
+
+
+
+

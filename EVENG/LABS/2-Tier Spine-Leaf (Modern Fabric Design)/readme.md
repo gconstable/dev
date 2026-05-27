@@ -1,0 +1,1 @@
+sudo ifconfig eth0 10.10.11.100 netmask 255.255.255.0 up

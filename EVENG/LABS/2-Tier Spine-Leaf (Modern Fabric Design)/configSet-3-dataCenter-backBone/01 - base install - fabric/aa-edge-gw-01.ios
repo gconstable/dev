@@ -1,0 +1,44 @@
+! ------------------------------------------------------------------------------
+! SECTION 1: STSTEM-WIDE SETTINGS
+! ------------------------------------------------------------------------------
+!
+hostname AA-EDGE-GW-01
+!
+ip routing
+!
+license boot level network-advantage addon dna-advantage
+!
+! system mtu 9100
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL LAYER 3 BACKBONE INTERFACES
+! ------------------------------------------------------------------------------
+
+!
+interface Loopback0
+ description ISIS-RID
+ ip address 10.1.0.1 255.255.255.255
+ ip router isis INFRA-FABRIC
+!
+interface Gi1
+ description L3_UPLINK_TO_SPINE_01
+ ip address 192.168.1.1 255.255.255.252
+ ip router isis INFRA-FABRIC
+ isis network point-to-point
+ no shutdown
+!
+interface Gi2
+ description L3_UPLINK_TO_SPINE_02
+ ip address 192.168.1.5 255.255.255.252
+ ip router isis INFRA-FABRIC
+ isis network point-to-point
+ no shutdown
+!
+router isis INFRA-FABRIC
+ net 49.0001.0000.0000.0001.00   ! Area 49.0001, Unique System ID 0000.0000.0001
+ is-type level-2-only
+ metric-style wide
+ log-adjacency-changes
+ passive-interface Loopback0
+ 
+!
