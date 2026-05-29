@@ -40,7 +40,6 @@ router isis INFRA-FABRIC
  metric-style wide
  log-adjacency-changes
  passive-interface Loopback0
- bfd all-interfaces
 !
 
 

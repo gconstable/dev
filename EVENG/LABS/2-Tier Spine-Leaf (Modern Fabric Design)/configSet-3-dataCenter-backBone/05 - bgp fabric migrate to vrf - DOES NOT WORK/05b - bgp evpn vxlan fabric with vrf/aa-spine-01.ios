@@ -4,7 +4,6 @@
 
 !
 interface Loopback10
- vrf forwarding VRF-INFRA-FABRIC
  description BGP_PEER_SOURCE
  ip address 10.10.0.3 255.255.255.255
  ip router isis INFRA-FABRIC

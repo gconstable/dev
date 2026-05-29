@@ -19,7 +19,7 @@ interface Loopback10
 
 !
 router bgp 65000
- bgp router-id 10.10.0.1
+ bgp router-id 10.10.0.2
  bgp log-neighbor-changes
 !
  neighbor 10.10.0.3 remote-as 65000
