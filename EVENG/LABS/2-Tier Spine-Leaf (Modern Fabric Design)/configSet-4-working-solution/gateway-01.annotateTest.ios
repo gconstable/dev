@@ -1,0 +1,190 @@
+!
+! Last configuration change at 12:54:43 UTC Fri May 29 2026
+!
+hostname AA-EDGE-GW-01
+!
+! ------------------------------------------------------------------------------
+! SECTION 1: GLOBAL TENANT AND CONTROL PLANE DEFINITIONS
+! ------------------------------------------------------------------------------
+! [TECHNICAL FEATURE]
+! Command: 'vrf definition VRF-101' -> Isolates Layer 3 tenant traffic.
+! Command: 'rd 65100:101' -> Keeps overlapping customer routes unique in BGP.
+! Command: 'route-target export/import 65100:101 stitching' -> Ingests and exports tenant routes.
+!
+! [RISK / AUDIT]
+! Command: 'route-target export/import 65100:101' -> Mismatches the EVI route targets below.
+!
+vrf definition VRF-101
+ rd 65100:101
+ !
+ address-family ipv4
+  route-target export 65100:101 stitching
+  route-target export 65000:101 stitching
+  route-target import 65100:101 stitching
+  route-target import 65000:101 stitching
+ exit-address-family
+!
+! [TECHNICAL FEATURE]
+! Command: 'replication-type ingress' -> Uses head-end unicast replication for BUM traffic.
+!
+! [RISK / AUDIT]
+! Command: 'route-target export 10.0.0.1:101' -> Bad design. IP-based RTs break fabric scaling.
+!
+l2vpn evpn instance 101 vlan-based
+ encapsulation vxlan
+ route-target export 10.0.0.1:101
+ route-target import 10.0.0.1:101
+ route-target export 10.0.0.2:101
+ route-target import 10.0.0.2:101
+ route-target export 65000:101
+ route-target import 65000:101
+ replication-type ingress
+!
+enable secret 9 $9$fDonitdCnV8l9U$Lk4tXbvWVPftkSK5niuh58I0VU5q/ODp7GiwIee4IbU ! Adm1ni5trat0r
+!
+! [TECHNICAL FEATURE]
+! Command: 'member evpn-instance 101 vni 50101' -> Binds the bridge domain to the data plane VNI.
+!
+bridge-domain 101 
+ member evpn-instance 101 vni 50101
+!
+! ------------------------------------------------------------------------------
+! SECTION 2: LOGICAL AND VIRTUAL INTERFACES
+! ------------------------------------------------------------------------------
+! [TECHNICAL FEATURE]
+! Command: 'interface Loopback0' -> Core VTEP source IP used for VXLAN tunnel encapsulation.
+!
+interface Loopback0
+ description VXLAN VTEP Source IP
+ ip address 10.200.0.1 255.255.255.255
+!
+! [RISK / AUDIT]
+! Command: 'ip address 1.1.1.1' -> Dead code. Router ID is set to Loopback0 instead.
+!
+interface Loopback1
+ description ##_ BGP_RID _##
+ ip address 1.1.1.1 255.255.255.255
+!
+! [TECHNICAL FEATURE]
+! Command: 'interface Loopback101' -> Inside-VRF diagnostic endpoint for local validation.
+!
+interface Loopback101
+ vrf forwarding VRF-101
+ ip address 101.101.101.1 255.255.255.255
+!
+! [RISK / AUDIT]
+! Command: 'interface BDI101' -> Broken Anycast. Missing virtual MAC definition.
+!
+interface BDI101
+ vrf forwarding VRF-101
+ ip address 101.101.103.1 255.255.255.0
+!
+! [TECHNICAL FEATURE]
+! Command: 'host-reachability protocol bgp' -> Uses MP-BGP instead of data-plane flood-and-learn.
+!
+! [RISK / AUDIT]
+! Command: 'member vni 50101 vrf VRF-101' -> Broken. VNI 50101 is L2, but mapped here as L3.
+!
+interface nve1
+ description Core VXLAN Overlay Tunnel Interface
+ no ip address
+ source-interface Loopback0
+ host-reachability protocol bgp
+ member vni 50101 vrf VRF-101
+!
+! ------------------------------------------------------------------------------
+! SECTION 3: PHYSICAL HARDWARE INTERFACES
+! ------------------------------------------------------------------------------
+! [BEST PRACTICE]
+! Command: 'ip address 10.255.1.1 255.255.255.252' -> Point-to-point /30 subnet saves address space.
+!
+interface GigabitEthernet1
+ description ##_ GW-01 Gi1 SPINE-01 Gi1/0/1 _##
+ ip address 10.255.1.1 255.255.255.252
+ negotiation auto
+!
+interface GigabitEthernet2
+ description ##_ GW-01 Gi1 SPINE-02 Gi1/0/1 _##
+ ip address 10.255.1.5 255.255.255.252
+ negotiation auto
+!
+! [RISK / AUDIT]
+! Command: 'service instance 101 ethernet' -> Broken. Missing VLAN encapsulation and BD binding.
+!
+interface GigabitEthernet3
+ no ip address
+ negotiation auto
+ service instance 101 ethernet
+!
+! [RISK / AUDIT]
+! Command: 'interface GigabitEthernet4' -> Plaintext DHCP ID asset. Unused backdoor risk.
+!
+interface GigabitEthernet4
+ ip dhcp client client-id ascii 9MCR9HNJP2O
+ ip address dhcp
+ shutdown
+ negotiation auto
+!
+! ------------------------------------------------------------------------------
+! SECTION 4: ROUTING PROTOCOLS AND POLICIES
+! ------------------------------------------------------------------------------
+! [TECHNICAL FEATURE]
+! Command: 'neighbor fall-over bfd' -> Enables sub-second link failure detection.
+! Command: 'advertise l2vpn evpn' -> Converts local VRF prefixes into EVPN Type-5 routes.
+!
+! [BEST PRACTICE]
+! Command: 'no bgp fast-external-fallover' -> Keeps session up during minor interface blips.
+!
+! [RISK / AUDIT]
+! Command: 'neighbor 10.255.1.2 ebgp-multihop 5' -> Peering is physical, but multihop is set.
+! Command: 'route-map EVPN-OUT-VRF-101' -> Forces a next-hop that upstream Spines cannot route to.
+!
+router bgp 65100
+ bgp router-id 10.200.0.1
+ no bgp fast-external-fallover
+ bgp log-neighbor-changes
+ neighbor 10.255.1.2 remote-as 65000
+ neighbor 10.255.1.2 ebgp-multihop 5
+ neighbor 10.255.1.2 fall-over bfd
+ neighbor 10.255.1.6 remote-as 65000
+ neighbor 10.255.1.6 ebgp-multihop 5
+ neighbor 10.255.1.6 fall-over bfd
+ neighbor 2.2.2.2 remote-as 65100
+ neighbor 2.2.2.2 ebgp-multihop 5
+ neighbor 2.2.2.2 update-source Loopback1
+ !
+ address-family ipv4
+  redistribute connected
+  neighbor 2.2.2.2 activate
+  neighbor 2.2.2.2 send-community both
+  neighbor 10.255.1.2 activate
+  neighbor 10.255.1.2 send-community both
+  neighbor 10.255.1.6 activate
+  neighbor 10.255.1.6 send-community both
+ exit-address-family
+ !
+ address-family l2vpn evpn
+  neighbor 10.255.1.2 activate
+  neighbor 10.255.1.2 send-community both
+  neighbor 10.255.1.2 route-map EVPN-OUT-VRF-101 out
+  neighbor 10.255.1.6 activate
+  neighbor 10.255.1.6 send-community both
+  neighbor 10.255.1.6 route-map EVPN-OUT-VRF-101 out
+ exit-address-family
+ !
+ address-family ipv4 vrf VRF-101
+  advertise l2vpn evpn
+  redistribute connected
+  maximum-paths 4
+ exit-address-family
+!
+! [RISK / AUDIT]
+! Command: 'route-map EVPN-OUT-EBGP-VRF-101' -> Dead code. Declared but never applied to a neighbor.
+!
+route-map EVPN-OUT-EBGP-VRF-101 permit 10 
+ set ip next-hop unchanged
+!
+route-map EVPN-OUT-VRF-101 permit 10 
+ set ip next-hop 10.200.0.1
+!
+end
