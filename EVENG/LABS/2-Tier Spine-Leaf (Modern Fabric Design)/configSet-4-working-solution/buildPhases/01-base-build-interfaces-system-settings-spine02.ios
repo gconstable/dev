@@ -1,0 +1,37 @@
+! =========================================================================
+! 1. SYSTEM SETTINGS
+! =========================================================================
+
+
+! EVE-NG CAT8K device requires license applied / saved / rebooted before configuration is applied - uncomment if needed.
+! license boot level network-advantage addon dna-advantage
+
+! Hostname of device
+hostname AA-SPINE-02
+
+! Enable ip routing
+ip routing
+
+! =========================================================================
+! 2. INTERFACES
+! =========================================================================
+
+!
+interface GigabitEthernet1/0/1
+ description ##_ SPINE-01 Gi1/0/1 GW-01 Gi1 _##
+ no switchport
+ mtu 8978
+ ip address 10.255.1.2 255.255.255.252
+
+!
+interface GigabitEthernet1/0/2
+ description ##_ SPINE-01 Gi1/0/1 GW-02 Gi1 _##
+ no switchport
+ mtu 8978
+ ip address 10.255.1.10 255.255.255.252
+
+interface GigabitEthernet1/0/3
+ description ##_ SPINE-01 Gi1/0/3 SPINE-02 Gi1/0/3 _##
+ no switchport
+ mtu 8978
+ ip address 10.255.1.17 255.255.255.252

@@ -1,0 +1,31 @@
+! =========================================================================
+! 1. SYSTEM SETTINGS
+! =========================================================================
+
+! EVE-NG CAT8K device requires license applied / saved / rebooted before configuration is applied - uncomment if needed.
+! license boot level network-advantage addon dna-advantage
+
+! Hostname of device
+hostname AA-EDGE-GW-01
+
+! Enable ip routing
+ip routing
+
+! =========================================================================
+! 2. INTERFACES
+! =========================================================================
+
+!
+interface GigabitEthernet1
+ description ##_ GW-01 Gi1 SPINE-01 Gi1/0/1 _##
+ mtu 9216
+ ip address 10.255.1.1 255.255.255.252
+ negotiation auto
+
+!
+interface GigabitEthernet2
+ description ##_ GW-01 Gi1 SPINE-02 Gi1/0/1 _##
+ mtu 9216
+ ip address 10.255.1.5 255.255.255.252
+ negotiation auto
+
