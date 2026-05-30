@@ -1,0 +1,68 @@
+! =========================================================================
+! VXLAN EVPN TENANT BUILD - VRF-101
+! =========================================================================
+
+
+! =========================================================================
+! VRF CONFIGURATION
+! =========================================================================
+
+vrf definition VRF-101
+ rd 10.200.0.1:101
+
+ address-family ipv4
+  route-target export 10.200.0.1:101 stitching
+  route-target export 10.200.0.2:101 stitching
+  route-target import 10.200.0.1:101 stitching
+  route-target import 10.200.0.2:101 stitching
+ exit-address-family
+
+
+! =========================================================================
+! BGP EVPN CONTROL PLANE
+! =========================================================================
+
+router bgp 65100
+
+ l2vpn evpn instance 101 vlan-based
+  encapsulation vxlan
+  route-target export 10.0.0.1:101
+  route-target import 10.0.0.1:101
+  route-target export 10.0.0.2:101
+  route-target import 10.0.0.2:101
+  route-target export 10.200.0.1:101
+  route-target import 10.200.0.1:101
+  route-target export 10.200.0.2:101
+  route-target import 10.200.0.2:101
+  replication-type ingress
+
+ address-family ipv4 vrf VRF-101
+  advertise l2vpn evpn
+  redistribute connected
+  maximum-paths 4
+ exit-address-family
+
+
+! =========================================================================
+! BRIDGE DOMAIN MAPPING
+! =========================================================================
+
+bridge-domain 101
+ member evpn-instance 101 vni 50101
+
+
+! =========================================================================
+! VXLAN VTEP CONFIGURATION
+! =========================================================================
+
+interface nve1
+ member vni 50101 vrf VRF-101
+
+
+! =========================================================================
+! TENANT L3 GATEWAY (BDI)
+! =========================================================================
+
+interface BDI101
+ vrf forwarding VRF-101
+ ip address 101.101.103.1 255.255.255.0

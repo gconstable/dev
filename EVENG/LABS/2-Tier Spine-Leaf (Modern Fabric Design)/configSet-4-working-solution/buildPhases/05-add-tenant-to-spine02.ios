@@ -1,0 +1,43 @@
+! =========================================================================
+! VXLAN EVPN TENANT BUILD - VRF-101
+! =========================================================================
+
+! Configure vlans for tenant connectivity and trunk interfaces to leaf switches.
+vlan 202
+  name CUST_A_LF01
+
+vlan 203
+  name CUST_A_LF02
+
+! Configure SVI interfaces for address connectivity accross the fabric.
+interface Vlan101
+ vrf forwarding VRF-101
+ ip unnumbered Loopback0
+ no autostate
+end
+
+! Configure SVI interfaces for tenant connectivity to leaf switches.
+interface Vlan200
+ description ##_ SPINE_01 SVI-200 CUST_A LEAF_01_##
+ vrf forwarding VRF-101
+ ip address 10.255.2.9 255.255.255.252
+
+! Configure SVI interfaces for tenant connectivity to leaf switches.
+interface Vlan201
+ description ##_ SPINE_01 SVI-201 CUST_A LEAF_02 _##
+ vrf forwarding VRF-101
+ ip address 10.255.2.13 255.255.255.252
+
+! Configure trunk interfaces to leaf switches for tenant VLANs.
+interface GigabitEthernet1/0/13
+ description ##_ SPINE_01 GI1/0/13 LEAF_01 GI1/0/1 DOT1Q _##
+ switchport trunk native vlan 666
+ switchport trunk allowed vlan 101,202
+ switchport mode trunk
+
+! Configure trunk interfaces to leaf switches for tenant VLANs.
+interface GigabitEthernet1/0/14
+ description ##_ SPINE_01 GI1/0/14 LEAF_02 GI1/0/1 DOT1Q _##
+ switchport trunk native vlan 666
+ switchport trunk allowed vlan 101,203
+ switchport mode trunk

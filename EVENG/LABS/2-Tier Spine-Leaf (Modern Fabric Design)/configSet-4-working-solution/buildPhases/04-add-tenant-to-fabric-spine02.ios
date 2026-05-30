@@ -1,0 +1,100 @@
+! =========================================================================
+! VXLAN EVPN TENANT BUILD - VRF-101
+! =========================================================================
+
+! =========================================================================
+! VRF CONFIGURATION
+! =========================================================================
+
+! This configuration defines VRF-101 and enables route exchange within the EVPN fabric using BGP Route Targets. 
+! It provides tenant route isolation while allowing connectivity between designated fabric devices. 
+
+vrf definition VRF-101
+ rd 10.0.0.2:101
+
+ address-family ipv4
+  route-target export 65200:101 stitching
+  route-target export 65000:101 stitching
+  route-target export 65100:101 stitching
+  route-target import 65200:101 stitching
+  route-target import 65000:101 stitching
+  route-target import 65100:101 stitching
+ exit-address-family
+
+! =========================================================================
+! VLAN + VXLAN MAPPING
+! =========================================================================
+
+! This configuration builds a VXLAN EVPN tenant for VLAN 101 mapped to VNI 50101 within VRF-101. 
+! It extends the VLAN across the overlay, binds it to the VRF on the VTEP, 
+! and creates SVI Vlan101 as the tenant gateway using a loopback-based IP setup, ensuring consistent Layer 3 connectivity within the fabric.
+
+vlan 101
+ name TENANT_101
+
+vlan configuration 101
+ member vni 50101
+
+! =========================================================================
+! VXLAN VTEP CONFIGURATION
+! =========================================================================
+
+interface nve1
+ member vni 50101 vrf VRF-101
+
+! =========================================================================
+! TENANT L3 GATEWAY (SVI)
+! =========================================================================
+
+interface Vlan101
+ vrf forwarding VRF-101
+ ip unnumbered Loopback0
+ no autostate
+
+! =========================================================================
+! BGP CONFIGURATION
+! =========================================================================
+
+! This config establishes eBGP for VRF-101 under AS 65000 using peer-session and peer-policy templates. 
+! It forms BGP neighbor relationships with external devices, activates the IPv4 address family for the VRF, 
+! and advertises EVPN and connected routes to enable controlled route exchange between the fabric and 
+! customer-facing networks while maintaining VRF isolation.
+
+router bgp 65000
+
+ ! -------------------------------------------------
+ ! PEER SESSION TEMPLATE
+ ! -------------------------------------------------
+ template peer-session PS_CUSTOMER_A_65200
+  remote-as 65200
+  ebgp-multihop 5
+ exit-peer-session
+
+ ! -------------------------------------------------
+ ! PEER POLICY TEMPLATE
+ ! -------------------------------------------------
+ template peer-policy PP_CUSTOMER_A_65200
+  send-community both
+ exit-peer-policy
+
+ ! -------------------------------------------------
+ ! GLOBAL NEIGHBOR (TRANSPORT)
+ ! -------------------------------------------------
+ 
+ neighbor 10.255.2.10 inherit peer-session PS_CUSTOMER_A_65200
+ neighbor 10.255.2.14 inherit peer-session PS_CUSTOMER_A_65200
+
+ ! -------------------------------------------------
+ ! VRF ADDRESS-FAMILY
+ ! -------------------------------------------------
+
+ address-family ipv4 vrf VRF-101
+  advertise l2vpn evpn
+  redistribute connected
+
+  neighbor 10.255.2.10 inherit peer-policy PP_CUSTOMER_A_65200
+  neighbor 10.255.2.10 activate
+
+  neighbor 10.255.2.14 inherit peer-policy PP_CUSTOMER_A_65200
+  neighbor 10.255.2.14 activate
+ exit-address-family
