@@ -23,7 +23,6 @@ vrf definition VRF-101
 ! =========================================================================
 
 router bgp 65100
-
  l2vpn evpn instance 101 vlan-based
   encapsulation vxlan
   route-target export 10.0.0.1:101
@@ -35,7 +34,9 @@ router bgp 65100
   route-target export 10.200.0.2:101
   route-target import 10.200.0.2:101
   replication-type ingress
+ exit
 
+router bgp 65100
  address-family ipv4 vrf VRF-101
   advertise l2vpn evpn
   redistribute connected
@@ -66,3 +67,4 @@ interface nve1
 interface BDI101
  vrf forwarding VRF-101
  ip address 101.101.102.1 255.255.255.0
+ no shut

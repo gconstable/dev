@@ -13,12 +13,15 @@ vrf definition VRF-101
  rd 10.0.0.1:101
 
  address-family ipv4
-  route-target export 65200:101 stitching
-  route-target export 65000:101 stitching
-  route-target export 65100:101 stitching
-  route-target import 65200:101 stitching
-  route-target import 65000:101 stitching
-  route-target import 65100:101 stitching
+  route-target export 10.0.0.1:101 stitching
+  route-target import 10.0.0.1:101 stitching
+  route-target export 10.0.0.2:101 stitching
+  route-target import 10.0.0.2:101 stitching
+
+  route-target export 10.200.0.1:101 stitching
+  route-target import 10.200.0.1:101 stitching
+  route-target export 10.200.0.2:101 stitching
+  route-target import 10.200.0.2:101 stitching
  exit-address-family
 
 
@@ -36,6 +39,9 @@ vlan 101
 vlan configuration 101
  member vni 50101
 
+vlan 666
+ name PARKED
+
 ! =========================================================================
 ! VXLAN VTEP CONFIGURATION
 ! =========================================================================
@@ -48,6 +54,7 @@ interface nve1
 ! =========================================================================
 
 interface Vlan101
+ description ##_ TENANT_101 SVI _##
  vrf forwarding VRF-101
  ip unnumbered Loopback0
  no autostate
@@ -92,9 +99,11 @@ router bgp 65000
   advertise l2vpn evpn
   redistribute connected
 
+  neighbor 10.255.2.2 inherit peer-session PS_CUSTOMER_A_65200
   neighbor 10.255.2.2 inherit peer-policy PP_CUSTOMER_A_65200
   neighbor 10.255.2.2 activate
 
+  neighbor 10.255.2.6 inherit peer-session PS_CUSTOMER_A_65200
   neighbor 10.255.2.6 inherit peer-policy PP_CUSTOMER_A_65200
   neighbor 10.255.2.6 activate
  exit-address-family

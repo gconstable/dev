@@ -35,12 +35,14 @@ router bgp 65100
   route-target export 10.200.0.2:101
   route-target import 10.200.0.2:101
   replication-type ingress
+ exit
 
+router bgp 65100
  address-family ipv4 vrf VRF-101
   advertise l2vpn evpn
   redistribute connected
   maximum-paths 4
- exit-address-family
+ exit
 
 
 ! =========================================================================
@@ -66,3 +68,4 @@ interface nve1
 interface BDI101
  vrf forwarding VRF-101
  ip address 101.101.103.1 255.255.255.0
+ no shut

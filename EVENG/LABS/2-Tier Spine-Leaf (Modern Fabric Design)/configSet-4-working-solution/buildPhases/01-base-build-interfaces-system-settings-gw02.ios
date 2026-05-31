@@ -16,6 +16,11 @@ ip routing
 ! =========================================================================
 
 !
+interface Loopback1
+ description ##_ GW-02 Loopback1 _##
+ ip address 2.2.2.2 255.255.255.255
+
+!
 interface GigabitEthernet1
  description ##_ GW-02 Gi1 SPINE-01 Gi1/0/1 _##
  mtu 9216

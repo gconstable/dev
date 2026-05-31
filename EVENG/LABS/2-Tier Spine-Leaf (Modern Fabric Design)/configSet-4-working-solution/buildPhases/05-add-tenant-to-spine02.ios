@@ -14,16 +14,15 @@ interface Vlan101
  vrf forwarding VRF-101
  ip unnumbered Loopback0
  no autostate
-end
 
 ! Configure SVI interfaces for tenant connectivity to leaf switches.
-interface Vlan200
+interface Vlan202
  description ##_ SPINE_01 SVI-200 CUST_A LEAF_01_##
  vrf forwarding VRF-101
  ip address 10.255.2.9 255.255.255.252
 
 ! Configure SVI interfaces for tenant connectivity to leaf switches.
-interface Vlan201
+interface Vlan203
  description ##_ SPINE_01 SVI-201 CUST_A LEAF_02 _##
  vrf forwarding VRF-101
  ip address 10.255.2.13 255.255.255.252
