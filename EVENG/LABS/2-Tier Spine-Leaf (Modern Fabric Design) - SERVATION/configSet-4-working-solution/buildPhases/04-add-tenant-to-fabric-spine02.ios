@@ -24,6 +24,7 @@ vrf definition VRF-101
   route-target import 10.200.0.2:101 stitching
  exit-address-family
 
+
 ! =========================================================================
 ! VLAN + VXLAN MAPPING
 ! =========================================================================
@@ -70,40 +71,20 @@ interface Vlan101
 router bgp 65000
 
  ! -------------------------------------------------
- ! PEER SESSION TEMPLATE
- ! -------------------------------------------------
- template peer-session PS_CUSTOMER_A_65200
-  remote-as 65200
-  ebgp-multihop 5
- exit-peer-session
-
- ! -------------------------------------------------
- ! PEER POLICY TEMPLATE
- ! -------------------------------------------------
- template peer-policy PP_CUSTOMER_A_65200
-  send-community both
- exit-peer-policy
-
- ! -------------------------------------------------
  ! GLOBAL NEIGHBOR (TRANSPORT)
  ! -------------------------------------------------
  
- neighbor 10.255.2.10 inherit peer-session PS_CUSTOMER_A_65200
- neighbor 10.255.2.14 inherit peer-session PS_CUSTOMER_A_65200
+ ! dynamic learning of neighbors for the customer.  Subnet issued to customer.
+ bgp listen range 10.255.2.0/24 peer-group PG_CUSTOMER_A_65200
 
  ! -------------------------------------------------
  ! VRF ADDRESS-FAMILY
  ! -------------------------------------------------
-
- address-family ipv4 vrf VRF-101
+address-family ipv4 vrf VRF-101
   advertise l2vpn evpn
   redistribute connected
-
-  neighbor 10.255.2.10 inherit peer-session PS_CUSTOMER_A_65200
-  neighbor 10.255.2.10 inherit peer-policy PP_CUSTOMER_A_65200
-  neighbor 10.255.2.10 activate
-
-  neighbor 10.255.2.14 inherit peer-session PS_CUSTOMER_A_65200
-  neighbor 10.255.2.14 inherit peer-policy PP_CUSTOMER_A_65200
-  neighbor 10.255.2.14 activate
+  neighbor PG_CUSTOMER_A_65200 peer-group
+  neighbor PG_CUSTOMER_A_65200 remote-as 65200
+  neighbor PG_CUSTOMER_A_65200 ebgp-multihop 5
+  neighbor PG_CUSTOMER_A_65200 activate
  exit-address-family
