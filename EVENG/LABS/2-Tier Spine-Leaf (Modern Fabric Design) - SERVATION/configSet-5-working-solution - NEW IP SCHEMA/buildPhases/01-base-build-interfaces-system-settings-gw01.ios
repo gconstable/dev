@@ -1,0 +1,36 @@
+! =========================================================================
+! 1. SYSTEM SETTINGS
+! =========================================================================
+
+! EVE-NG CAT8K device requires license applied / saved / rebooted before configuration is applied - uncomment if needed.
+! license boot level network-advantage addon dna-advantage
+
+! Hostname of device
+hostname AA-103-A6-001
+
+! Enable ip routing
+ip routing
+
+! =========================================================================
+! 2. INTERFACES
+! =========================================================================
+
+!
+interface Loopback25
+ description ##_ BGP-ROUTER-ID _##
+ ip address 10.1.1.1 255.255.255.255
+
+!
+interface GigabitEthernet1
+ description ##_ AA-103-A6-001 Gi1 AA-101-A6-001 Gi1/0/1 _##
+ mtu 9216
+ ip address 10.1.0.0 255.255.255.254
+ negotiation auto
+
+!
+interface GigabitEthernet2
+ description ##_ AA-103-A6-001 Gi1 AA-103-A6-002 Gi1/0/1 _##
+ mtu 9216
+ ip address 10.1.0.2 255.255.255.254
+ negotiation auto
+!

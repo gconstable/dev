@@ -1,0 +1,54 @@
+! =========================================================================
+! 1. INTERFACE & VTEP CONFIGURATION
+! =========================================================================
+
+!
+interface Loopback109
+ description ##_ VXLAN VTEP SOURCE ADDRESS _##
+ ip address 10.1.2.2 255.255.255.255
+!
+
+! =========================================================================
+! 2. BGP POLICY TEMPLATES (Address-Family Layer: Communities & Route-Maps)
+! =========================================================================
+
+router bgp 4200001000
+! Policy for address l2vpn evpn underlay fabric
+ template peer-policy PP_L2VPN_EVPN_UNDERLAY
+  send-community both
+  route-map EVPN-OUT-VTEP-REWRITE out
+ exit-peer-policy
+!
+
+! =========================================================================
+! 3. ADDRESS FAMILY LAYOUT
+! =========================================================================
+
+!
+ address-family l2vpn evpn
+  ! Activate and apply EVPN policies via templates
+  neighbor 10.1.0.5 activate
+  neighbor 10.1.0.5 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
+  
+  neighbor 10.1.0.7 activate
+  neighbor 10.1.0.7 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
+ exit-address-family
+
+! =========================================================================
+! 4. ROUTE MAPS ( Mapping Next-Hops (VTEP IP Rewriting to Lo0) )
+! =========================================================================
+! 
+route-map EVPN-OUT-VTEP-REWRITE permit 10 
+ set ip next-hop 10.1.2.2
+!
+
+! =========================================================================
+! 5. NVE INTERFACE ( VTEP Source address )
+! =========================================================================
+! 
+interface nve1
+ description ##_ PRIMARY_VXLAN_VTEP_INTERFACE _##
+ no ip address
+ source-interface Loopback109
+ host-reachability protocol bgp
+!

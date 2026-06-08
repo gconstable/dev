@@ -1,0 +1,82 @@
+router bgp 4200001000
+ bgp router-id 10.1.1.3
+ no bgp fast-external-fallover
+ bgp log-neighbor-changes
+
+ ! =========================================================================
+ ! 1. SESSION TEMPLATES (Transport Layer: BFD, TTL, Source)
+ ! =========================================================================
+ 
+ ! Template for AS 4210000001 infrastructure nodes
+ template peer-session PS_UNDERLAY_INFRA_4210000001
+  remote-as 4210000001
+  ebgp-multihop 5
+  fall-over bfd
+  soft-reconfiguration inbound
+ exit-peer-session
+
+ ! Template for AS 4200001000 internal nodes
+ template peer-session PS_UNDERLAY_INFRA_4200001000
+  remote-as 4200001000
+  ebgp-multihop 5
+  fall-over bfd
+  soft-reconfiguration inbound
+ exit-peer-session
+
+
+ ! =========================================================================
+ ! 2. POLICY TEMPLATES (Address-Family Layer: Communities & Route-Maps)
+ ! =========================================================================
+ 
+ ! Policy for underlay address family within AS 4200001000: ipv4 
+ template peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
+  send-community both
+ exit-peer-policy
+
+ ! Policy for underlay address family within AS 4210000001: ipv4
+ template peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
+  send-community both
+ exit-peer-policy
+
+ ! Policy for address l2vpn evpn underlay
+ template peer-policy PP_L2VPN_EVPN_UNDERLAY
+   send-community both
+   route-map EVPN-OUT-VRF-101 out
+ exit-peer-policy
+
+ ! =========================================================================
+ ! 3. NEIGHBOR IP ASSIGNMENT (Global Process)
+ ! =========================================================================
+ neighbor 10.1.0.0 inherit peer-session PS_UNDERLAY_INFRA_4210000001
+ neighbor 10.1.0.4 inherit peer-session PS_UNDERLAY_INFRA_4210000001
+ neighbor 10.1.0.9 inherit peer-session PS_UNDERLAY_INFRA_4200001000
+ 
+ ! =========================================================================
+ ! 4. ADDRESS FAMILY LAYOUT
+ ! =========================================================================
+ address-family ipv4
+  redistribute connected
+  
+  ! Activate and apply IPv4 policies via templates
+  neighbor 10.1.0.0 activate
+  neighbor 10.1.0.0 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
+  
+  neighbor 10.1.0.4 activate
+  neighbor 10.1.0.4 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
+  
+  neighbor 10.1.0.9 activate
+  neighbor 10.1.0.9 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
+ exit-address-family
+
+ address-family l2vpn evpn
+  ! Activate and apply EVPN policies via templates
+  neighbor 10.1.0.0 activate
+  neighbor 10.1.0.0 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
+  
+  neighbor 10.1.0.4 activate
+  neighbor 10.1.0.4 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
+
+  neighbor 10.1.0.9 activate
+  neighbor 10.1.0.9 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
+ exit-address-family
+

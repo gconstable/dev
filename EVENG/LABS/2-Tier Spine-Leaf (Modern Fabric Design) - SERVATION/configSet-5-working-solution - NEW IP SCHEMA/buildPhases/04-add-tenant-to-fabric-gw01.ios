@@ -1,0 +1,77 @@
+! =========================================================================
+! VXLAN EVPN TENANT BUILD - VRF-1001
+! =========================================================================
+
+
+! =========================================================================
+! VRF CONFIGURATION
+! =========================================================================
+
+vrf definition VRF-TENANT-1
+ rd 10.1.1.1:1001
+
+ address-family ipv4
+  route-target export 10.1.1.1:1001 stitching
+  route-target export 10.1.1.2:1001 stitching
+  route-target import 10.1.1.1:1001 stitching
+  route-target import 10.1.1.2:1001 stitching
+ exit-address-family
+
+
+! =========================================================================
+! BGP EVPN CONTROL PLANE
+! =========================================================================
+
+router bgp 4210000001
+
+ l2vpn evpn instance 1001 vlan-based
+  encapsulation vxlan
+  route-target export 10.1.1.1:1001
+  route-target import 10.1.1.1:1001
+  route-target export 10.1.1.2:1001
+  route-target import 10.1.1.2:1001
+  route-target export 10.1.1.3:1001
+  route-target import 10.1.1.3:1001
+  route-target export 10.1.1.4:1001
+  route-target import 10.1.1.4:1001
+  replication-type ingress
+ exit
+
+router bgp 4210000001
+ address-family ipv4 vrf VRF-TENANT-1
+  advertise l2vpn evpn
+  redistribute connected
+  maximum-paths 4
+ exit
+
+
+! =========================================================================
+! BRIDGE DOMAIN MAPPING
+! =========================================================================
+
+bridge-domain 1001
+ member evpn-instance 101 vni 1001
+
+
+! =========================================================================
+! VXLAN VTEP CONFIGURATION
+! =========================================================================
+
+interface nve1
+ member vni 1001 vrf VRF-TENANT-1
+
+
+! =========================================================================
+! TENANT L3 GATEWAY (BDI)
+! =========================================================================
+
+interface BDI1001
+ vrf forwarding VRF-TENANT-1
+ ip address 101.101.103.1 255.255.255.0
+ no shut
+
+! =========================================================================
+! NOTES
+! =========================================================================
+
+! Need to see if BDI interface can be done differently to save ip address space.
