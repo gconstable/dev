@@ -8,8 +8,8 @@ router bgp 4210000001
  ! =========================================================================
  
  ! Template for AS 4200001000 infrastructure nodes
- template peer-session PS_UNDERLAY_INFRA_65000
-  remote-as 65000
+ template peer-session PS_UNDERLAY_INFRA_4200001000
+  remote-as 4200001000
   ebgp-multihop 5
   fall-over bfd
  exit-peer-session
@@ -18,7 +18,6 @@ router bgp 4210000001
  template peer-session PS_UNDERLAY_INFRA_4210000001
   remote-as 4210000001
   ebgp-multihop 5
-  update-source Loopback1
  exit-peer-session
 
 
@@ -27,7 +26,7 @@ router bgp 4210000001
  ! =========================================================================
  
  ! Policy for underlay address family within AS 4200001000: ipv4 
- template peer-policy PP_IPV4_UNDERLAY_INFRA_65000
+ template peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
   send-community both
   allowas-in 2
  exit-peer-policy
@@ -42,7 +41,7 @@ router bgp 4210000001
  ! =========================================================================
  neighbor 10.1.0.1 inherit peer-session PS_UNDERLAY_INFRA_4200001000
  neighbor 10.1.0.3 inherit peer-session PS_UNDERLAY_INFRA_4200001000
- neighbor 10.1.1.2 inherit peer-session PS_UNDERLAY_INFRA_4210000001
+ neighbor 10.1.0.5 inherit peer-session PS_UNDERLAY_INFRA_4210000001
  
  ! =========================================================================
  ! 4. ADDRESS FAMILY LAYOUT
@@ -57,8 +56,10 @@ router bgp 4210000001
   neighbor 10.1.0.3 activate
   neighbor 10.1.0.3 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
   
-  neighbor 10.1.1.2 activate
-  neighbor 10.1.1.2 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
+  neighbor 10.1.0.5 activate
+  neighbor 10.1.0.5 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
+
+  maximum-paths 4
  exit-address-family
 !
 

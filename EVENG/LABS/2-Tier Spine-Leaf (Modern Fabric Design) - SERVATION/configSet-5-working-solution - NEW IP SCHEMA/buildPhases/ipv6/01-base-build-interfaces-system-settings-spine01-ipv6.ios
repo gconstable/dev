@@ -7,43 +7,51 @@
 ! license boot level network-advantage addon dna-advantage
 
 ! Hostname of device
-hostname AA-101-A6-002
+hostname AA-101-A6-001
 
 ! Enable ip routing
-ip routing
+ipv6 unicast-routing 
 
 ! =========================================================================
 ! 2. INTERFACES
 ! =========================================================================
 
-
 !
 interface Loopback25
  description ##_ BGP-ROUTER-ID _##
- ip address 10.1.1.4 255.255.255.255
+ no ip address
+ ipv6 address 2001:DB8:1::3/128
+ ipv6 enable
 
 !
 interface GigabitEthernet1/0/1
- description ##_ AA-101-A6-002 Gi1/0/1 AA-103-A6-001 Gi1 _##
- no switchport
+ description ##_ AA-101-A6-001 Gi1/0/1 AA-103-A6-001 Gi1 _##
  mtu 8978
- ip address 10.1.0.3 255.255.255.254
+ no ip address
+ negotiation auto
+ ipv6 unnumbered Loopback25
+ ipv6 enable
+ ipv6 nd autoconfig prefix
+!
 
 !
 interface GigabitEthernet1/0/2
- description ##_ AA-101-A6-002 Gi1/0/1 AA-103-A6-002 Gi1 _##
- no switchport
+ description ##_ AA-101-A6-001 Gi1/0/1 AA-103-A6-002 Gi1 _##
  mtu 8978
- ip address 10.1.0.9 255.255.255.254
+ no ip address
+ negotiation auto
+ ipv6 unnumbered Loopback25
+ ipv6 enable
+ ipv6 nd autoconfig prefix
+!
 
+!
 interface GigabitEthernet1/0/3
- description ##_ AA-101-A6-002 Gi1/0/3 AA-101-A6-001 Gi1/0/3 _##
- no switchport
+ description ##_ AA-101-A6-001 Gi1/0/3 AA-101-A6-002 Gi1/0/3 _##
  mtu 8978
- ip address 10.1.0.11 255.255.255.254
-
-! =========================================================================
-! 3. NOTES
-! =========================================================================
-! 
-! MTU SETTINGS NEED TO BE CHANGED ON PHYSICAL HARDWARE.  THESE SETTINGS ARE EVENG SPECIFIC.
+ no ip address
+ negotiation auto
+ ipv6 unnumbered Loopback25
+ ipv6 enable
+ ipv6 nd autoconfig prefix
+!

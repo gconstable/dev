@@ -22,14 +22,23 @@ interface Loopback25
 
 !
 interface GigabitEthernet1
- description ##_ AA-103-A6-002 Gi1 AA-101-A6-001 Gi1/0/1 _##
+ description ##_ AA-103-A6-002 Gi1 AA-101-A6-001 Gi1/0/2 _##
  mtu 9216
- ip address 10.255.1.9 255.255.255.252
+ ip address 10.1.0.6 255.255.255.254
  negotiation auto
 
 !
 interface GigabitEthernet2
- description ##_ AA-103-A6-002 Gi1 AA-103-A6-002 Gi1/0/1 _##
+ description ##_ AA-103-A6-002 Gi1 AA-103-A6-002 Gi1/0/2 _##
  mtu 9216
- ip address 10.255.1.13 255.255.255.252
+ ip address 10.1.0.8 255.255.255.254
  negotiation auto
+!
+
+!
+interface GigabitEthernet5
+ description ##_ AA-103-A6-002 Gi1 AA-103-A6-001 Gi1/0/1 _##
+ mtu 9216
+ ip address 10.1.0.5 255.255.255.254
+ negotiation auto
+!

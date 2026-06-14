@@ -16,6 +16,10 @@ ip routing
 ! 2. INTERFACES
 ! =========================================================================
 
+interface Loopback25
+ description ##_ BGP-ROUTER-ID _##
+ ip address 10.1.1.3 255.255.255.255
+
 interface GigabitEthernet1/0/1
  description ##_ AA-101-A6-001 Gi1/0/1 AA-103-A6-001 Gi1 _##
  no switchport
@@ -27,13 +31,13 @@ interface GigabitEthernet1/0/2
  description ##_ AA-101-A6-001 Gi1/0/1 AA-103-A6-002 Gi1 _##
  no switchport
  mtu 8978
- ip address 10.1.0.3 255.255.255.254
+ ip address 10.1.0.7 255.255.255.254
 
 interface GigabitEthernet1/0/3
  description ##_ AA-101-A6-001 Gi1/0/3 AA-101-A6-002 Gi1/0/3 _##
  no switchport
  mtu 8978
- ip address 10.1.0.8 255.255.255.254
+ ip address 10.1.0.10 255.255.255.254
 
 ! =========================================================================
 ! 3. NOTES

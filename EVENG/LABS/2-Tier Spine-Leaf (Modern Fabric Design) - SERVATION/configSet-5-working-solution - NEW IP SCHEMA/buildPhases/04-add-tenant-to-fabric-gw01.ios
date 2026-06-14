@@ -23,7 +23,6 @@ vrf definition VRF-TENANT-1
 ! =========================================================================
 
 router bgp 4210000001
-
  l2vpn evpn instance 1001 vlan-based
   encapsulation vxlan
   route-target export 10.1.1.1:1001
@@ -50,7 +49,7 @@ router bgp 4210000001
 ! =========================================================================
 
 bridge-domain 1001
- member evpn-instance 101 vni 1001
+ member evpn-instance 1001 vni 501001
 
 
 ! =========================================================================
@@ -58,7 +57,7 @@ bridge-domain 1001
 ! =========================================================================
 
 interface nve1
- member vni 1001 vrf VRF-TENANT-1
+ member vni 501001 vrf VRF-TENANT-1
 
 
 ! =========================================================================

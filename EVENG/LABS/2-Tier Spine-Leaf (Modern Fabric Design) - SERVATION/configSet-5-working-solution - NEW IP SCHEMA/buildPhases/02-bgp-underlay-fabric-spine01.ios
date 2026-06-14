@@ -48,8 +48,8 @@ router bgp 4200001000
  ! 3. NEIGHBOR IP ASSIGNMENT (Global Process)
  ! =========================================================================
  neighbor 10.1.0.0 inherit peer-session PS_UNDERLAY_INFRA_4210000001
- neighbor 10.1.0.4 inherit peer-session PS_UNDERLAY_INFRA_4210000001
- neighbor 10.1.0.9 inherit peer-session PS_UNDERLAY_INFRA_4200001000
+ neighbor 10.1.0.6 inherit peer-session PS_UNDERLAY_INFRA_4210000001
+ neighbor 10.1.0.11 inherit peer-session PS_UNDERLAY_INFRA_4200001000
  
  ! =========================================================================
  ! 4. ADDRESS FAMILY LAYOUT
@@ -61,22 +61,13 @@ router bgp 4200001000
   neighbor 10.1.0.0 activate
   neighbor 10.1.0.0 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
   
-  neighbor 10.1.0.4 activate
-  neighbor 10.1.0.4 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
+  neighbor 10.1.0.6 activate
+  neighbor 10.1.0.6 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
   
-  neighbor 10.1.0.9 activate
-  neighbor 10.1.0.9 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
+  neighbor 10.1.0.11 activate
+  neighbor 10.1.0.11 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
+
+  maximum-paths 4
  exit-address-family
 
- address-family l2vpn evpn
-  ! Activate and apply EVPN policies via templates
-  neighbor 10.1.0.0 activate
-  neighbor 10.1.0.0 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
-  
-  neighbor 10.1.0.4 activate
-  neighbor 10.1.0.4 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
-
-  neighbor 10.1.0.9 activate
-  neighbor 10.1.0.9 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
- exit-address-family
 

@@ -12,7 +12,7 @@ interface Loopback109
 ! 2. BGP POLICY TEMPLATES (Address-Family Layer: Communities & Route-Maps)
 ! =========================================================================
 
-router bgp 4200001000
+router bgp 4210000001
 
 ! Policy for address l2vpn evpn underlay fabric
  template peer-policy PP_L2VPN_EVPN_UNDERLAY
@@ -33,11 +33,14 @@ router bgp 4200001000
   
   neighbor 10.1.0.3 activate
   neighbor 10.1.0.3 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
+
+  neighbor 10.1.0.5 activate
+  neighbor 10.1.0.5 inherit peer-policy PP_L2VPN_EVPN_UNDERLAY
  exit-address-family
 !
 
 ! =========================================================================
-! 4. ROUTE MAPS ( Mapping Next-Hops (VTEP IP Rewriting to Lo0) )
+! 4. ROUTE MAPS ( Mapping Next-Hops (VTEP IP Rewriting to Lo) )
 ! =========================================================================
 ! 
 route-map EVPN-OUT-VTEP-REWRITE permit 10 

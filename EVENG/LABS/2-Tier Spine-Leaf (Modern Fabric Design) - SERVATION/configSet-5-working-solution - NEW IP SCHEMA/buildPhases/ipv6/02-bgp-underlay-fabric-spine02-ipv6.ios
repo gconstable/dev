@@ -1,5 +1,5 @@
-router bgp 4210000001
- bgp router-id 10.1.1.2
+router bgp 4200001000
+ bgp router-id 10.1.1.3
  no bgp fast-external-fallover
  bgp log-neighbor-changes
 
@@ -7,17 +7,18 @@ router bgp 4210000001
  ! 1. SESSION TEMPLATES (Transport Layer: BFD, TTL, Source)
  ! =========================================================================
  
- ! Template for AS 4200001000 infrastructure nodes
- template peer-session PS_UNDERLAY_INFRA_4200001000
-  remote-as 4200001000
+ ! Template for AS 4210000001 infrastructure nodes
+ template peer-session PS_UNDERLAY_INFRA_4210000001
+  remote-as 4210000001
   ebgp-multihop 5
   fall-over bfd
  exit-peer-session
 
- ! Template for AS 4210000001 internal nodes
- template peer-session PS_UNDERLAY_INFRA_4210000001
-  remote-as 4210000001
+ ! Template for AS 4200001000 internal nodes
+ template peer-session PS_UNDERLAY_INFRA_4200001000
+  remote-as 4200001000
   ebgp-multihop 5
+  fall-over bfd
  exit-peer-session
 
 
@@ -28,7 +29,6 @@ router bgp 4210000001
  ! Policy for underlay address family within AS 4200001000: ipv4 
  template peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
   send-community both
-  allowas-in 2
  exit-peer-policy
 
  ! Policy for underlay address family within AS 4210000001: ipv4
@@ -39,28 +39,29 @@ router bgp 4210000001
  ! =========================================================================
  ! 3. NEIGHBOR IP ASSIGNMENT (Global Process)
  ! =========================================================================
- neighbor 10.1.0.7 inherit peer-session PS_UNDERLAY_INFRA_4200001000
- neighbor 10.1.0.9 inherit peer-session PS_UNDERLAY_INFRA_4200001000
- neighbor 10.1.0.4 inherit peer-session PS_UNDERLAY_INFRA_4210000001
+ 
+ neighbor FE80::%GigabitEthernet1/0/1 inherit peer-session PS_UNDERLAY_INFRA_4200001000
+ neighbor FE80::%GigabitEthernet1/0/2 inherit peer-session PS_UNDERLAY_INFRA_4200001000
+ neighbor FE80::%GigabitEthernet1/0/3 inherit peer-session PS_UNDERLAY_INFRA_4210000001
  
  ! =========================================================================
  ! 4. ADDRESS FAMILY LAYOUT
  ! =========================================================================
- address-family ipv4
+
+ !
+ address-family ipv6
   redistribute connected
-  
-  ! Activate and apply IPv4 policies via templates
-  neighbor 10.1.0.7 activate
-  neighbor 10.1.0.7 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
-  
-  neighbor 10.1.0.9 activate
-  neighbor 10.1.0.9 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
-  
-  neighbor 10.1.0.4 activate
-  neighbor 10.1.0.4 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
 
-  maximum-paths 4
+  neighbor FE80::%GigabitEthernet1/0/1 activate
+  neighbor FE80::%GigabitEthernet1/0/1 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
+  
+  neighbor FE80::%GigabitEthernet1/0/2 activate
+  neighbor FE80::%GigabitEthernet1/0/2 peer-policy PP_IPV4_UNDERLAY_INFRA_4200001000
+  
+  neighbor FE80::5200:FF:FE02:4%GigabitEthernet1/0/3 activate
+  neighbor FE80::5200:FF:FE02:4%GigabitEthernet1/0/3 inherit peer-policy PP_IPV4_UNDERLAY_INFRA_4210000001
+
+  maximum-paths 32
+
  exit-address-family
-
-
-
+!

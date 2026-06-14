@@ -29,7 +29,7 @@ vrf definition VRF-TENANT-1
 ! VLAN + VXLAN MAPPING
 ! =========================================================================
 
-! This configuration builds a VXLAN EVPN tenant for VLAN 101 mapped to VNI 50101 within VRF-101. 
+! This configuration builds a VXLAN EVPN tenant for VLAN 1001 mapped to VNI 50101 within VRF-101. 
 ! It extends the VLAN across the overlay, binds it to the VRF on the VTEP, 
 ! and creates SVI Vlan101 as the tenant gateway using a loopback-based IP setup, ensuring consistent Layer 3 connectivity within the fabric.
 
@@ -37,7 +37,7 @@ vlan 1001
  name VRF-TENANT-1
 
 vlan configuration 1001
- member vni 1001
+ member vni 501001
 
 vlan 666
  name PARKED
@@ -47,7 +47,7 @@ vlan 666
 ! =========================================================================
 
 interface nve1
- member vni 1001 vrf VRF-TENANT-1
+ member vni 501001 vrf VRF-TENANT-1
 
 ! =========================================================================
 ! TENANT L3 GATEWAY (SVI)
@@ -80,11 +80,11 @@ router bgp 4200001000
  ! -------------------------------------------------
  ! VRF ADDRESS-FAMILY
  ! -------------------------------------------------
-address-family ipv4 vrf VRF-TENANT-1
-  advertise l2vpn evpn
-  redistribute connected
-  neighbor PG_CUSTOMER_A_4200001000 peer-group
-  neighbor PG_CUSTOMER_A_4200001000 remote-as 65200
-  neighbor PG_CUSTOMER_A_4200001000 ebgp-multihop 5
-  neighbor PG_CUSTOMER_A_4200001000 activate
- exit-address-family
+  address-family ipv4 vrf VRF-TENANT-1
+    advertise l2vpn evpn
+    redistribute connected
+    neighbor PG_CUSTOMER_A_4200001000 peer-group
+    neighbor PG_CUSTOMER_A_4200001000 remote-as 65200
+    neighbor PG_CUSTOMER_A_4200001000 ebgp-multihop 5
+    neighbor PG_CUSTOMER_A_4200001000 activate
+  exit-address-family
